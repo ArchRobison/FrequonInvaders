@@ -1,2 +1,2 @@
 # FrequonInvaders
-Port of Frequon Invaders to Go Language
+This is a work in progress to port Frequon Invaders from C++ to Go Language
