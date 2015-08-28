@@ -23,33 +23,33 @@ type Invader struct {
 }
 
 var background PixMap
- 
+
 var black Pixel
 
 func Init(width, height int32) {
-    black = Gray(0)
-    background = MakePixMap(width,height,make([]Pixel,height*width),width)
-    background.Fill(black)
+	black = Gray(0)
+	background = MakePixMap(width, height, make([]Pixel, height*width), width)
+	background.Fill(black)
 }
 
 func Draw(pm PixMap, invaders []Invader) {
-    if pm.Width() != background.Width() || pm.Height() != background.Height() {
-	    panic("fall.Draw: pm and background differ")
-    }
-	pm.Copy(0,0,&background)
+	if pm.Width() != background.Width() || pm.Height() != background.Height() {
+		panic("fall.Draw: pm and background differ")
+	}
+	pm.Copy(0, 0, &background)
 
-    xScale := float32(pm.Width()-2*tickHalfWidth)
-    xOffset := float32(tickHalfWidth)
-    yScale := float32(pm.Height()-2*tickHalfHeight)
-    yOffset := float32(tickHalfHeight)
+	xScale := float32(pm.Width() - 2*tickHalfWidth)
+	xOffset := float32(tickHalfWidth)
+	yScale := float32(pm.Height() - 2*tickHalfHeight)
+	yOffset := float32(tickHalfHeight)
 	for _, inv := range invaders {
-		x := int32(inv.Power * xScale + xOffset)
-		y := int32(inv.Lifetime * yScale + yOffset)
+		x := int32(inv.Power*xScale + xOffset)
+		y := int32(inv.Lifetime*yScale + yOffset)
 		r := Rect{x - tickHalfWidth, y - tickHalfHeight, x + tickHalfWidth, y + tickHalfHeight}
 		pm.DrawRect(r, inv.Color)
-	    background.DrawRect(r, black)
-		if background.Contains(x,y) {
-		    background.SetPixel(x,y,inv.Color)
-	    }
+		background.DrawRect(r, black)
+		if background.Contains(x, y) {
+			background.SetPixel(x, y, inv.Color)
+		}
 	}
 }
