@@ -2,9 +2,9 @@ package radar
 
 import (
 	"fmt"
-	"math"
 	"github.com/ArchRobison/FrequonInvaders/math32"
 	"github.com/ArchRobison/NimbleDraw"
+	"math"
 )
 
 var frameStorage []nimble.Pixel
@@ -35,7 +35,7 @@ var (
 	xOffset, yOffset float32 // Offsets for mapping view onto [-1,1]x[-1,1]
 )
 
-// Linearized arrays of dimension height x width 
+// Linearized arrays of dimension height x width
 var (
 	polar []polarCoor // Storage for polar coordinates
 	clut  []rgb       // Storate for clut

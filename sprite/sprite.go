@@ -1,9 +1,9 @@
 package sprite
 
 import (
+	math32 "github.com/ArchRobison/FrequonInvaders/math32"
+	nimble "github.com/ArchRobison/NimbleDraw"
 	"math/rand"
-	. "github.com/ArchRobison/FrequonInvaders/math32"
-	. "github.com/ArchRobison/NimbleDraw"
 	"sort"
 )
 
@@ -12,33 +12,16 @@ type spriteRow struct {
 	x []int8
 }
 
-func drawSprite(dst *PixMap, x0, y0 int32, src []spriteRow, color Pixel) {
-	w := uint32(dst.Width())
-	h := uint32(dst.Height())
-	for _, s := range src {
-		y := y0 + int32(s.y)
-		if uint32(y) < h {
-			d := dst.Row(y)
-			for _, xoffset := range s.x {
-				x := x0 + int32(xoffset)
-				if uint32(x) < w {
-					d[x] = color
-				}
-			}
-		}
-	}
-}
-
 type fragment struct {
-	sx, sy float32
-	vx, vy float32
+	sx, sy float32 // Position (units = pixels)
+	vx, vy float32 // Velocity (units pixels/sec)
 }
 
 func makeFragments(radius int, self bool) (frags []fragment) {
 	r := float32(radius)
 	for y := -r; y <= r; y++ {
 		for x := -r; x <= r; x++ {
-			d := Hypot(x, y)
+			d := math32.Hypot(x, y)
 			var includePoint bool
 			if self {
 				// Self is hollow ring
@@ -57,12 +40,13 @@ func makeFragments(radius int, self bool) (frags []fragment) {
 					vx, vy = 0, 0
 					extra = 1.4
 				}
-				θ := rand.Float32() * (2 * Pi)
+				// Random non-radial component
+				uy, ux := math32.Sincos(rand.Float32() * (2 * math32.Pi))
 				frags = append(frags, fragment{
 					x,
 					y,
-					vx + Cos(θ)*extra,
-					vy + Sin(θ)*extra,
+					vx + ux*extra,
+					vy + uy*extra,
 				})
 			}
 		}
@@ -100,14 +84,18 @@ func (p byYX) Swap(i, j int) {
 	p[i], p[j] = p[j], p[i]
 }
 
-func makeSpriteFromFragments(frags []fragment) (s []spriteRow) {
+type Sprite struct {
+	rows []spriteRow
+}
+
+func makeSpriteFromFragments(frags []fragment) (s Sprite) {
 	if len(frags) == 0 {
 		return
 	}
 	p := make([]point, 0, len(frags))
 	for i := range frags {
-		x := RoundToInt(frags[i].sx)
-		y := RoundToInt(frags[i].sy)
+		x := math32.RoundToInt(frags[i].sx)
+		y := math32.RoundToInt(frags[i].sy)
 		if -128 <= x && x < 128 && -128 <= y && y < 128 {
 			p = append(p, point{int8(x), int8(y)})
 		}
@@ -123,18 +111,13 @@ func makeSpriteFromFragments(frags []fragment) (s []spriteRow) {
 		for k := range x {
 			x[k] = p[i+k].x
 		}
-		s = append(s, spriteRow{y, x})
+		s.rows = append(s.rows, spriteRow{y, x})
 	}
 	return
 }
 
-type Seq [][]spriteRow
-
-func Len(s Seq) int {
-	return len(s)
-}
-
-func MakeSeq(radius int, self bool, seqLen int) (s [][]spriteRow) {
+// Create sequence of frames
+func MakeAnimation(radius int, self bool, seqLen int) (s []Sprite) {
 	f := makeFragments(radius, self)
 	shuffleFragments(f)
 	tScale := float32(len(f)) / float32(seqLen)
@@ -148,6 +131,18 @@ func MakeSeq(radius int, self bool, seqLen int) (s [][]spriteRow) {
 	return
 }
 
-func Draw(pm PixMap, x0, y0 int32, s Seq, t int, color Pixel) {
-	drawSprite(&pm, x0, y0, s[t], color)
+func Draw(dst nimble.PixMap, x0, y0 int32, src Sprite, color nimble.Pixel) {
+	w, h := dst.Size()
+	for _, s := range src.rows {
+		y := y0 + int32(s.y)
+		if uint32(y) < uint32(h) {
+			d := dst.Row(y)
+			for _, xoffset := range s.x {
+				x := x0 + int32(xoffset)
+				if uint32(x) < uint32(w) {
+					d[x] = color
+				}
+			}
+		}
+	}
 }

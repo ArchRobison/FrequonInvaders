@@ -40,6 +40,16 @@ func Atan2(y float32, x float32) float32 {
 	return float32(math.Atan2(float64(y), float64(x)))
 }
 
+func Abs(x float32) float32 {
+	if x < 0 {
+		return -x
+	}
+	if x == 0 {
+		return 0 // Deals with negative zero case
+	}
+	return x
+}
+
 func Max(a, b float32) float32 {
 	if a < b {
 		return b

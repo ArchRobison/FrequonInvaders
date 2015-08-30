@@ -2,7 +2,7 @@ package sprite
 
 import (
 	"fmt"
-	"FrequonInvaders/nimble"
+	nimble "github.com/ArchRobison/NimbleDraw"
 	"testing"
 )
 
@@ -21,12 +21,13 @@ func TestMakeFragments(t *testing.T) {
 		a = 12
 		b = 14
 	)
-	src := MakeSeq(5, false, 1)
+	src := MakeFrames(5, false, 1)
 	dst := nimble.MakePixMap(w, h, make([]nimble.Pixel, w*h), w)
 	background := nimble.RGB(0.5, 0.25, 1)
 	foreground := nimble.RGB(0.25, 1, 0.25)
 	dst.Fill(background)
-	Draw(dst, a, b, src, 0, foreground)
+	Draw(dst, a, b, src[0], foreground)
+
 	// Result should be a filled circle
 	for y := int32(0); y < dst.Height(); y++ {
 		for x := int32(0); x < dst.Width(); x++ {
@@ -45,11 +46,11 @@ func TestMakeFragments(t *testing.T) {
 	}
 }
 
-var src = MakeSeq(10, false, 1)
+var src = MakeFrames(10, false, 1)
 var dst = nimble.MakePixMap(500, 500, make([]nimble.Pixel, 500*500), 500)
 
 func BenchmarkDraw(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		Draw(dst, 250, 250, src, 0, nimble.Gray(1))
+		Draw(dst, 250, 250, src[0], nimble.Gray(1))
 	}
 }

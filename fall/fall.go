@@ -1,55 +1,68 @@
 // Package fall implements the "Amplitude View" view, where
 // the player sees tics falling on a parabolic curve.
-
 package fall
 
-import . "github.com/ArchRobison/NimbleDraw"
+import (
+	nimble "github.com/ArchRobison/NimbleDraw"
+)
 
 const (
 	tickHalfWidth  = 8
 	tickHalfHeight = 2
 )
 
-type Interface interface {
-	Len() int
-	Power(id int) float64
-	TickColor(id int) Pixel
-}
-
 type Invader struct {
-	Power    float32
-	Lifetime float32
-	Color    Pixel
+	Progress  float32 // Verical coordinate of tic mark
+	Amplitude float32 // Horizonal coordinate of tic mark
+	Color     nimble.Pixel
 }
 
-var background PixMap
+var background nimble.PixMap
 
-var black Pixel
+var black nimble.Pixel = nimble.Gray(0)
 
 func Init(width, height int32) {
-	black = Gray(0)
-	background = MakePixMap(width, height, make([]Pixel, height*width), width)
+	black = nimble.Gray(0)
+	background = nimble.MakePixMap(width, height, make([]nimble.Pixel, height*width), width)
 	background.Fill(black)
 }
 
-func Draw(pm PixMap, invaders []Invader) {
+var lastDotTime float64
+
+const dotTimeInterval = 0.2
+
+func Draw(pm nimble.PixMap, invaders []Invader) {
 	if pm.Width() != background.Width() || pm.Height() != background.Height() {
 		panic("fall.Draw: pm and background differ")
 	}
-	pm.Copy(0, 0, &background)
 
-	xScale := float32(pm.Width() - 2*tickHalfWidth)
-	xOffset := float32(tickHalfWidth)
-	yScale := float32(pm.Height() - 2*tickHalfHeight)
-	yOffset := float32(tickHalfHeight)
+	drawDot := false
+	time := nimble.Time()
+	if time-lastDotTime >= dotTimeInterval {
+		lastDotTime = time
+		drawDot = true
+	}
+
+	pm.Copy(0, 0, &background)
+	xScale := float32(pm.Width() - tickHalfWidth)   // Avoid clipping tic on right side
+	yScale := float32(pm.Height() - tickHalfHeight) // Avoid clippling tic on bottom
+	xOffset := float32(0)
+	yOffset := float32(0)
 	for _, inv := range invaders {
-		x := int32(inv.Power*xScale + xOffset)
-		y := int32(inv.Lifetime*yScale + yOffset)
-		r := Rect{x - tickHalfWidth, y - tickHalfHeight, x + tickHalfWidth, y + tickHalfHeight}
+		x := int32(inv.Amplitude*xScale + xOffset)
+		y := int32(inv.Progress*yScale + yOffset)
+		r := nimble.Rect{
+			Left:   x - tickHalfWidth,
+			Top:    y - tickHalfHeight,
+			Right:  x + tickHalfWidth,
+			Bottom: y + tickHalfHeight,
+		}
 		pm.DrawRect(r, inv.Color)
 		background.DrawRect(r, black)
-		if background.Contains(x, y) {
-			background.SetPixel(x, y, inv.Color)
+		if drawDot {
+			if doty := r.Top - 1; background.Contains(x, doty) {
+				background.SetPixel(x, doty, inv.Color)
+			}
 		}
 	}
 }

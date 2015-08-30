@@ -2,17 +2,16 @@
 
 package fourier
 
-import . "github.com/ArchRobison/NimbleDraw"
+import "github.com/ArchRobison/NimbleDraw"
 
 func CLUTSize() int32 {
-    return clutSize
+	return clutSize
 }
 
-func DrawCLUT(pm PixMap) {
+func DrawCLUT(pm nimble.PixMap) {
 	for y := int32(0); y < clutSize; y++ {
-	    for x := int32(0); x < clutSize; x++ {
-			pm.SetPixel( x, y, clut[y][x] )
+		for x := int32(0); x < clutSize; x++ {
+			pm.SetPixel(x, y, clut[y][x])
 		}
 	}
 }
-

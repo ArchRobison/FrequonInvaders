@@ -1,15 +1,15 @@
 package main
 
 import (
-    _ "fmt"
+	_ "fmt"
+	"github.com/ArchRobison/FrequonInvaders/coloring"
 	"github.com/ArchRobison/FrequonInvaders/fall"
 	"github.com/ArchRobison/FrequonInvaders/fourier"
+	. "github.com/ArchRobison/FrequonInvaders/math32"
 	"github.com/ArchRobison/FrequonInvaders/radar"
 	"github.com/ArchRobison/FrequonInvaders/score"
 	"github.com/ArchRobison/FrequonInvaders/sprite"
 	"github.com/ArchRobison/FrequonInvaders/universe"
-	"github.com/ArchRobison/FrequonInvaders/coloring"
-	. "github.com/ArchRobison/FrequonInvaders/math32"
 	. "github.com/ArchRobison/NimbleDraw"
 )
 
@@ -19,24 +19,32 @@ var winWidth, winHeight int = 800, 600
 type context struct {
 }
 
-const ωScale = 0.001
+var harmonicStorage [universe.MaxCritter]fourier.Harmonic
 
-func drawFrequons(pm PixMap, selfX float32, selfY float32) {
-    c:=universe.Zoo
-    if len(c)<1 {
-	    panic("universe.Zoo is empty")
-    }
-	c[0].Sx = selfX - 0.5*float32(pm.Width())
-	c[0].Sy = selfY - 0.5*float32(pm.Height())
-    c[0].Amplitude = -1
-	h := make([]fourier.Harmonic, len(c))
-	α, β := 0.5*float32(pm.Width()), -0.5*float32(pm.Height())
+func drawFrequons(pm PixMap) {
+	c := universe.Zoo
+	h := harmonicStorage[:len(c)]
+
+	// Compute L1 norm of amplitudes
+	norm := float32(0)
 	for i := range h {
-		ωx, ωy := c[i].Sx*ωScale, c[i].Sy*ωScale
+		norm += Abs(c[i].Amplitude)
+	}
+	invNorm := 1 / norm
+
+	// Set up harmonics
+	// (cx,cy) is center of fourier view
+	cx, cy := 0.5*float32(pm.Width()), 0.5*float32(pm.Height())
+	α, β := -0.5*cx, -0.5*cy
+	const ωScale = 0.001
+	for i := range h {
+		ωx := (c[i].Sx - cx) * ωScale
+		ωy := (c[i].Sy - cy) * ωScale
 		h[i].Ωx = ωx
 		h[i].Ωy = ωy
 		h[i].Phase = α*ωx + β*ωy
-		h[i].Amplitude = c[i].Amplitude
+		// Scale amplitude so that DFT values fit within domain of color lookup table.
+		h[i].Amplitude = c[i].Amplitude * invNorm
 	}
 	fourier.Draw(pm, h)
 }
@@ -44,44 +52,83 @@ func drawFrequons(pm PixMap, selfX float32, selfY float32) {
 var white = Gray(1)
 
 var scoreCounter int
-var lifetimeCounter float32
-var spriteCounter int
+var lastTime float64
+
+func updateClock() (dt float32) {
+	t := Time()
+	if lastTime > 0 {
+		dt = float32(t - lastTime)
+	} else {
+		dt = 0
+	}
+	lastTime = t
+	return
+}
 
 func (context) Render(pm PixMap) {
+	dt := updateClock()
 
+	// Update universe
 	x, y := MouseWhere()
 	xf, yf := fourierPort.RelativeToLeftTop(x, y)
-	drawFrequons(pm.Intersect(fourierPort), float32(xf), float32(yf))
+	universe.Update(dt, xf, yf)
+
+	// Draw dividers
 	for _, r := range divider {
 		pm.DrawRect(r, white)
 	}
-	inv := make([]fall.Invader, 1)
-	inv[0].Lifetime = lifetimeCounter
-	lifetimeCounter += 0.01
-	if lifetimeCounter > 1 {
-		lifetimeCounter = 0
+
+	// Fourier view
+	drawFrequons(pm.Intersect(fourierPort))
+	for k := 1; k < len(universe.Zoo); k++ {
+		c := &universe.Zoo[k]
+		if c.Show {
+			i := c.ImageIndex()
+			if i < len(critterSeq[k]) {
+				// FIXME - draw only if close
+				sprite.Draw(pm.Intersect(fourierPort), int32(RoundToInt(c.Sx)), int32(RoundToInt(c.Sy)), critterSeq[k][i], Gray(0.5)) // FIXME - use pastel instead of gray
+			}
+		}
 	}
-	inv[0].Power = Sqrt(inv[0].Lifetime)
-	inv[0].Color = RGB(1, 0.5, 1)
+	sprite.Draw(pm.Intersect(fourierPort), xf, yf, critterSeq[0][0], white)
+
+	// Fall view
+	// FIXME - use storage buffer instead of creating new array each time?
+	inv := make([]fall.Invader, len(universe.Zoo)-1)
+	for k := range inv {
+		c := &universe.Zoo[k+1]
+		// FIXME - use pastel for color
+		inv[k] = fall.Invader{
+			Progress:  c.Progress,
+			Amplitude: c.Amplitude,
+			Color:     RGB(1, 0.5, 1)}
+	}
 	fall.Draw(pm.Intersect(fallPort), inv)
 
+	// Radar view
 	radar.Draw(pm.Intersect(radarPort), true)
 
+	// Score
 	score.Draw(pm.Intersect(scorePort), scoreCounter>>4)
-	scoreCounter++
-
-	sprite.Draw(pm.Intersect(fourierPort), xf, yf, selfSeq, spriteCounter, Gray(1))
-	spriteCounter = (spriteCounter + 1) % 60
+	scoreCounter++ // FIXME - temporary hack
 }
 
 var fallPort, radarPort, scorePort, fourierPort Rect
 var divider [3]Rect
-var selfSeq sprite.Seq
+var critterSeq [universe.MaxCritter][]sprite.Sprite
+
+func initCritterSprites(width, height int32) {
+	radius := height / 32
+	const frameCount = 60
+	for k := range critterSeq {
+		critterSeq[k] = sprite.MakeAnimation(int(radius), k == 0, frameCount)
+	}
+}
 
 func (context) Init(width, height int32) {
 	panelWidth := width / 8 / 6 * 6
 
-    universe.Init(width, height)
+	universe.Init(width, height)
 
 	fourierPort = Rect{Left: panelWidth + 1, Top: 0, Right: width, Bottom: height}
 
@@ -107,9 +154,7 @@ func (context) Init(width, height int32) {
 	radar.SetColoring(coloring.HasEverything)
 	fourier.Init(fourierPort.Size())
 	fourier.SetColoring(coloring.HasEverything)
-
-	selfRadius := height / 32
-	selfSeq = sprite.MakeSeq(int(selfRadius), true, 60)
+	initCritterSprites(width, height)
 }
 
 func main() {
