@@ -2,7 +2,7 @@ package score
 
 import (
 	"fmt"
-	"github.com/ArchRobison/NimbleDraw"
+	"github.com/ArchRobison/Gophetica/nimble"
 )
 
 const nLight = 6

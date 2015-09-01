@@ -1,8 +1,8 @@
 package fourier
 
 import (
-	"github.com/ArchRobison/FrequonInvaders/cmplx64"
-	"github.com/ArchRobison/NimbleDraw"
+	"github.com/ArchRobison/Gophetica/cmplx64"
+	"github.com/ArchRobison/Gophetica/nimble"
 )
 
 type Harmonic struct {

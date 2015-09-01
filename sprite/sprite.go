@@ -1,8 +1,8 @@
 package sprite
 
 import (
-	math32 "github.com/ArchRobison/FrequonInvaders/math32"
-	nimble "github.com/ArchRobison/NimbleDraw"
+	math32 "github.com/ArchRobison/Gophetica/math32"
+	nimble "github.com/ArchRobison/Gophetica/nimble"
 	"math/rand"
 	"sort"
 )
@@ -94,8 +94,8 @@ func makeSpriteFromFragments(frags []fragment) (s Sprite) {
 	}
 	p := make([]point, 0, len(frags))
 	for i := range frags {
-		x := math32.RoundToInt(frags[i].sx)
-		y := math32.RoundToInt(frags[i].sy)
+		x := int32(math32.Round(frags[i].sx))
+		y := int32(math32.Round(frags[i].sy))
 		if -128 <= x && x < 128 && -128 <= y && y < 128 {
 			p = append(p, point{int8(x), int8(y)})
 		}

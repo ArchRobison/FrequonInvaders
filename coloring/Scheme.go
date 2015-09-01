@@ -1,6 +1,6 @@
 package coloring
 
-import "github.com/ArchRobison/FrequonInvaders/math32"
+import "github.com/ArchRobison/Gophetica/math32"
 
 type Scheme int
 

@@ -3,7 +3,7 @@
 package fall
 
 import (
-	nimble "github.com/ArchRobison/NimbleDraw"
+	"github.com/ArchRobison/Gophetica/nimble"
 )
 
 const (
@@ -37,7 +37,7 @@ func Draw(pm nimble.PixMap, invaders []Invader) {
 	}
 
 	drawDot := false
-	time := nimble.Time()
+	time := nimble.Now()
 	if time-lastDotTime >= dotTimeInterval {
 		lastDotTime = time
 		drawDot = true

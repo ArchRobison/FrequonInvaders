@@ -2,7 +2,7 @@
 
 package fourier
 
-import "github.com/ArchRobison/NimbleDraw"
+import "github.com/ArchRobison/Gophetica/nimble"
 
 func CLUTSize() int32 {
 	return clutSize

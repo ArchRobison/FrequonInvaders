@@ -2,8 +2,8 @@ package radar
 
 import (
 	"fmt"
-	"github.com/ArchRobison/FrequonInvaders/math32"
-	"github.com/ArchRobison/NimbleDraw"
+	"github.com/ArchRobison/Gophetica/math32"
+	"github.com/ArchRobison/Gophetica/nimble"
 	"math"
 )
 

@@ -2,7 +2,7 @@ package universe
 
 import (
 	"fmt"
-	"github.com/ArchRobison/FrequonInvaders/math32"
+	"github.com/ArchRobison/Gophetica/math32"
 	"math/rand"
 )
 

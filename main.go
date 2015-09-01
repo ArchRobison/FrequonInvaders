@@ -5,12 +5,12 @@ import (
 	"github.com/ArchRobison/FrequonInvaders/coloring"
 	"github.com/ArchRobison/FrequonInvaders/fall"
 	"github.com/ArchRobison/FrequonInvaders/fourier"
-	. "github.com/ArchRobison/FrequonInvaders/math32"
 	"github.com/ArchRobison/FrequonInvaders/radar"
 	"github.com/ArchRobison/FrequonInvaders/score"
 	"github.com/ArchRobison/FrequonInvaders/sprite"
 	"github.com/ArchRobison/FrequonInvaders/universe"
-	. "github.com/ArchRobison/NimbleDraw"
+	"github.com/ArchRobison/Gophetica/math32"
+	"github.com/ArchRobison/Gophetica/nimble"
 )
 
 var winTitle string = "Go-SDL2 Render"
@@ -21,14 +21,14 @@ type context struct {
 
 var harmonicStorage [universe.MaxCritter]fourier.Harmonic
 
-func drawFrequons(pm PixMap) {
+func drawFrequons(pm nimble.PixMap) {
 	c := universe.Zoo
 	h := harmonicStorage[:len(c)]
 
 	// Compute L1 norm of amplitudes
 	norm := float32(0)
 	for i := range h {
-		norm += Abs(c[i].Amplitude)
+		norm += math32.Abs(c[i].Amplitude)
 	}
 	invNorm := 1 / norm
 
@@ -49,13 +49,13 @@ func drawFrequons(pm PixMap) {
 	fourier.Draw(pm, h)
 }
 
-var white = Gray(1)
+var white = nimble.Gray(1)
 
 var scoreCounter int
 var lastTime float64
 
 func updateClock() (dt float32) {
-	t := Time()
+	t := nimble.Now()
 	if lastTime > 0 {
 		dt = float32(t - lastTime)
 	} else {
@@ -65,11 +65,11 @@ func updateClock() (dt float32) {
 	return
 }
 
-func (context) Render(pm PixMap) {
+func (context) Render(pm nimble.PixMap) {
 	dt := updateClock()
 
 	// Update universe
-	x, y := MouseWhere()
+	x, y := nimble.MouseWhere()
 	xf, yf := fourierPort.RelativeToLeftTop(x, y)
 	universe.Update(dt, xf, yf)
 
@@ -86,7 +86,7 @@ func (context) Render(pm PixMap) {
 			i := c.ImageIndex()
 			if i < len(critterSeq[k]) {
 				// FIXME - draw only if close
-				sprite.Draw(pm.Intersect(fourierPort), int32(RoundToInt(c.Sx)), int32(RoundToInt(c.Sy)), critterSeq[k][i], Gray(0.5)) // FIXME - use pastel instead of gray
+				sprite.Draw(pm.Intersect(fourierPort), int32(math32.Round(c.Sx)), int32(math32.Round(c.Sy)), critterSeq[k][i], nimble.Gray(0.5)) // FIXME - use pastel instead of gray
 			}
 		}
 	}
@@ -101,7 +101,7 @@ func (context) Render(pm PixMap) {
 		inv[k] = fall.Invader{
 			Progress:  c.Progress,
 			Amplitude: c.Amplitude,
-			Color:     RGB(1, 0.5, 1)}
+			Color:     nimble.RGB(1, 0.5, 1)}
 	}
 	fall.Draw(pm.Intersect(fallPort), inv)
 
@@ -113,8 +113,8 @@ func (context) Render(pm PixMap) {
 	scoreCounter++ // FIXME - temporary hack
 }
 
-var fallPort, radarPort, scorePort, fourierPort Rect
-var divider [3]Rect
+var fallPort, radarPort, scorePort, fourierPort nimble.Rect
+var divider [3]nimble.Rect
 var critterSeq [universe.MaxCritter][]sprite.Sprite
 
 func initCritterSprites(width, height int32) {
@@ -130,23 +130,23 @@ func (context) Init(width, height int32) {
 
 	universe.Init(width, height)
 
-	fourierPort = Rect{Left: panelWidth + 1, Top: 0, Right: width, Bottom: height}
+	fourierPort = nimble.Rect{Left: panelWidth + 1, Top: 0, Right: width, Bottom: height}
 
 	scoreBottom := height
 	scoreTop := scoreBottom - panelWidth/6
-	scorePort = Rect{Left: 0, Top: scoreTop, Right: panelWidth, Bottom: scoreBottom}
+	scorePort = nimble.Rect{Left: 0, Top: scoreTop, Right: panelWidth, Bottom: scoreBottom}
 
 	radarBottom := scoreTop - 1
 	radarTop := radarBottom - panelWidth
-	radarPort = Rect{Left: 0, Top: radarTop, Right: panelWidth, Bottom: radarBottom}
+	radarPort = nimble.Rect{Left: 0, Top: radarTop, Right: panelWidth, Bottom: radarBottom}
 
 	fallBottom := radarTop - 1
 	fallTop := int32(0)
-	fallPort = Rect{Left: 0, Top: fallTop, Right: panelWidth, Bottom: fallBottom}
+	fallPort = nimble.Rect{Left: 0, Top: fallTop, Right: panelWidth, Bottom: fallBottom}
 
-	divider[0] = Rect{Left: panelWidth, Top: 0, Right: panelWidth + 1, Bottom: height}
-	divider[1] = Rect{Left: 0, Top: fallBottom, Right: panelWidth, Bottom: radarTop}
-	divider[2] = Rect{Left: 0, Top: radarBottom, Right: panelWidth, Bottom: scoreTop}
+	divider[0] = nimble.Rect{Left: panelWidth, Top: 0, Right: panelWidth + 1, Bottom: height}
+	divider[1] = nimble.Rect{Left: 0, Top: fallBottom, Right: panelWidth, Bottom: radarTop}
+	divider[2] = nimble.Rect{Left: 0, Top: radarBottom, Right: panelWidth, Bottom: scoreTop}
 
 	fall.Init(fallPort.Size())
 	radar.Init(radarPort.Size())
@@ -158,6 +158,6 @@ func (context) Init(width, height int32) {
 }
 
 func main() {
-	AddRenderClient(context{})
-	Run()
+	nimble.AddRenderClient(context{})
+	nimble.Run()
 }

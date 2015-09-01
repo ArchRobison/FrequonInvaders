@@ -1,7 +1,7 @@
 package coloring
 
 import (
-	"github.com/ArchRobison/FrequonInvaders/math32"
+	"github.com/ArchRobison/Gophetica/math32"
 )
 
 const π = math32.Pi
