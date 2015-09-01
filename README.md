@@ -16,8 +16,8 @@ go get github.com/ArchRobison/FrequonInvaders
 ```
 This should fetch the three repositories and put them relative to your `GOPATH` as follows:
 ```
-src/github.com/ArchRobison/NimbleDraw
 src/github.com/ArchRobison/FrequonInvaders
+src/github.com/ArchRobison/Gophetica
 src/github.com/veandco/go-sdl2
 ```
 3. cd to `src/github.com/ArchRobison/FrequonInvaders`
