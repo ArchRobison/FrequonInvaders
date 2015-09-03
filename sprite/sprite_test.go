@@ -2,7 +2,7 @@ package sprite
 
 import (
 	"fmt"
-	nimble "github.com/ArchRobison/NimbleDraw"
+	"github.com/ArchRobison/Gophetica/nimble"
 	"testing"
 )
 
@@ -21,7 +21,7 @@ func TestMakeFragments(t *testing.T) {
 		a = 12
 		b = 14
 	)
-	src := MakeFrames(5, false, 1)
+	src := MakeAnimation(5, false, 1)
 	dst := nimble.MakePixMap(w, h, make([]nimble.Pixel, w*h), w)
 	background := nimble.RGB(0.5, 0.25, 1)
 	foreground := nimble.RGB(0.25, 1, 0.25)
@@ -46,7 +46,7 @@ func TestMakeFragments(t *testing.T) {
 	}
 }
 
-var src = MakeFrames(10, false, 1)
+var src = MakeAnimation(10, false, 1)
 var dst = nimble.MakePixMap(500, 500, make([]nimble.Pixel, 500*500), 500)
 
 func BenchmarkDraw(b *testing.B) {
