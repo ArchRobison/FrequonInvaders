@@ -2,6 +2,7 @@ package universe
 
 import (
 	"fmt"
+	"github.com/ArchRobison/FrequonInvaders/sound"
 	"github.com/ArchRobison/Gophetica/math32"
 	"math/rand"
 )
@@ -30,7 +31,7 @@ const killTime = 0.1 // Time it takes being close to kill
 
 const amplitudeDieTime = 2.0 // Time in sec for Frequon to die at full amplitude.
 
-const MaxCritter = 16 // Maximum allowed critters (including self)
+const MaxCritter = 14 // Maximum allowed critters (including self)
 
 var zooStorage [MaxCritter]Critter
 
@@ -79,7 +80,9 @@ func bounce(sref, vref *float32, limit, dt float32) {
 		if s < 0 {
 			s = -s
 		} else if s > limit {
-			s = 2*limit - s
+            // Do not rewrite this as 2*limit - s, because that expression 
+			// can sometimes round off to a value > limit.
+			s = limit-(s-limit)
 		} else {
 			break
 		}
@@ -109,7 +112,7 @@ func updateLive(dt float32) {
 				c.health -= healthType(dt * (float32(initialHealth) / killTime))
 				if c.health <= 0 {
 					c.health = -1 // Transition to death sequence
-					// FIXME - play sound here
+					sound.Play(sound.Twang, alienPitch[c.id])
 				}
 				c.Show = true
 			} else {
@@ -126,19 +129,23 @@ func updateLive(dt float32) {
 		} else {
 			c.Amplitude -= dt * (1 / amplitudeDieTime)
 			if c.Amplitude < 0 {
-				// Mark alien as dead
+				// Alien croaked.  Mark as dead
 				c.health = deathThreshold
+				if !isPractice {
+					nKill++
+					setDifficulty(nKill)
+				}
 			}
 		}
 	}
 }
 
 func cullDead() {
-	for j := 0; j < len(Zoo); j++ {
+	for j := 1; j < len(Zoo); j++ {
 		if Zoo[j].health > deathThreshold {
 			// Surivor
 		} else {
-			// Cull it by moving id to end and shrinking slice
+			// Cull corpse by moving id to end and shrinking slice
 			k := len(Zoo) - 1
 			deadId := Zoo[j].id
 			Zoo[j] = Zoo[k]
@@ -150,8 +157,10 @@ func cullDead() {
 
 var (
 	birthRate   float32 = 1 // units = per second, only an average
-	maxLive             = 1
+	nLiveMax            = 1
 	velocityMax float32 = 1
+	nKill       int     = 0
+	isPractice          = false
 )
 
 const π = math32.Pi
@@ -181,20 +190,21 @@ func (c *Critter) initAlien() {
 
 func tryBirth(dt float32) {
 	j := len(Zoo)
-	if maxLive > len(zooStorage)-1 {
-		panic(fmt.Sprintf("birth: maxLive=%v > len(zooStorage)-1=%v\n", maxLive, len(zooStorage)-1))
+	if nLiveMax > len(zooStorage)-1 {
+		panic(fmt.Sprintf("birth: nLiveMax=%v > len(zooStorage)-1=%v\n", nLiveMax, len(zooStorage)-1))
 	}
 	nLive := j - 1
-	if nLive > maxLive {
-		panic(fmt.Sprintf("birth: nLive=%v > maxLive=%v\n", nLive, maxLive))
+	if nLive > nLiveMax {
+		panic(fmt.Sprintf("birth: nLive=%v > nLiveMax=%v\n", nLive, nLiveMax))
 	}
-	if nLive >= maxLive {
-		// Already reached populatino limit
+	if nLive >= nLiveMax {
+		// Already reached population limit
 		return
 	}
 	if rand.Float32() > dt*birthRate {
 		return
 	}
+
 	// Swap in random id
 	avail := len(zooStorage) - len(Zoo)
 	k := rand.Intn(avail) + j
@@ -203,6 +213,7 @@ func tryBirth(dt float32) {
 
 	// Initialize the alien
 	Zoo[j].initAlien()
+	sound.Play(sound.AntiTwang, alienPitch[Zoo[j].id])
 }
 
 // FIXME - try to avoid coupling unverse Model to View this way.
@@ -211,5 +222,20 @@ func (c *Critter) ImageIndex() int {
 		return 0
 	} else {
 		return -int(c.health)
+	}
+}
+
+// Embeds five notes of Sprach Zarathustra, but since birth ids are randomly,
+// chosen no one will notice
+var alienPitch = [MaxCritter]float32{
+	3.77549, 1.0000, 1.4983, 2.00000, 2.5198, 2.3784,
+	1.1224, 2.9966, 3.36358, 4.0000, 1.2599, 1.3348,
+	1.4983, 0.7492}
+
+func init() {
+	for _, p := range alienPitch {
+		if p < .5 || p > 4 {
+			panic("alienPitch wrong")
+		}
 	}
 }

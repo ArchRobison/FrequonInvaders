@@ -61,3 +61,7 @@ func init() {
 		return sum * (1.0 / n) * math32.Exp(-i*0.0001)
 	})
 }
+
+func Play(wave []float32, relativePitch float32) {
+	nimble.PlaySound(wave, 1, relativePitch)
+}

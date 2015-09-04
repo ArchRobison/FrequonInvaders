@@ -51,7 +51,6 @@ func drawFrequons(pm nimble.PixMap) {
 
 var white = nimble.Gray(1)
 
-var scoreCounter int
 var lastTime float64
 
 func updateClock() (dt float32) {
@@ -109,8 +108,7 @@ func (context) Render(pm nimble.PixMap) {
 	radar.Draw(pm.Intersect(radarPort), true)
 
 	// Score
-	score.Draw(pm.Intersect(scorePort), scoreCounter>>4)
-	scoreCounter++ // FIXME - temporary hack
+	score.Draw(pm.Intersect(scorePort), universe.NKill())
 }
 
 var fallPort, radarPort, scorePort, fourierPort nimble.Rect
@@ -151,9 +149,9 @@ func (context) Init(width, height int32) {
 	fall.Init(fallPort.Size())
 	radar.Init(radarPort.Size())
 	score.Init(scorePort.Size())
-	radar.SetColoring(coloring.HasEverything)
+	radar.SetColoring(coloring.AllBits)
 	fourier.Init(fourierPort.Size())
-	fourier.SetColoring(coloring.HasEverything)
+	fourier.SetColoring(coloring.AllBits)
 	initCritterSprites(width, height)
 }
 

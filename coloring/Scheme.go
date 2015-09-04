@@ -2,32 +2,34 @@ package coloring
 
 import "github.com/ArchRobison/Gophetica/math32"
 
-type Scheme int
+type SchemeBits int
 
 const (
-	HasReal Scheme = 1 << iota
-	HasImag
-	HasMagnitude
-	HasPhase
-	HasRed
-	HasGreen
-	HasBlue
-	HasEverything Scheme = 1<<iota - 1
+	RealBit SchemeBits = 1 << iota
+	ImagBit
+	MagnitudeBit
+	PhaseBit
+	RedBit
+	GreenBit
+	BlueBit
+	ColorBits      = RedBit | GreenBit | BlueBit                 // Color bits
+	CoordinateBits = RealBit | ImagBit | MagnitudeBit | PhaseBit // Coordinate system bits
+    AllBits = ColorBits| CoordinateBits
 )
 
-func (scheme Scheme) Color(x, y float32) (r, g, b float32) {
-	if scheme&HasReal == 0 {
+func (scheme SchemeBits) Color(x, y float32) (r, g, b float32) {
+	if scheme&RealBit == 0 {
 		x = 0
 	}
-	if scheme&HasImag == 0 {
+	if scheme&ImagBit == 0 {
 		y = 0
 	}
 	θ := math32.Atan2(-y, x)
 	d := float32(math32.Hypot(x, y))
-	if d > 1 || scheme&HasMagnitude == 0 {
+	if d > 1 || scheme&MagnitudeBit == 0 {
 		d = 1.0
 	}
-	if scheme&HasPhase == 0 {
+	if scheme&PhaseBit == 0 {
 		r, g, b = d, d, d
 	} else {
 		r, g, b = phaseColor(θ)
@@ -35,13 +37,13 @@ func (scheme Scheme) Color(x, y float32) (r, g, b float32) {
 		g *= d
 		b *= d
 	}
-	if scheme&HasRed == 0 {
+	if scheme&RedBit == 0 {
 		r = 0
 	}
-	if scheme&HasGreen == 0 {
+	if scheme&GreenBit == 0 {
 		g = 0
 	}
-	if scheme&HasBlue == 0 {
+	if scheme&BlueBit == 0 {
 		b = 0
 	}
 	return
