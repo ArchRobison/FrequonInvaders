@@ -71,25 +71,22 @@ var (
 )
 
 func bounce(sref, vref *float32, limit, dt float32) {
-	v := *vref
-	s := *sref + v*dt
+	s, v := *sref, *vref
 	if s < 0 || s > limit {
 		panic(fmt.Sprintf("s=%v v=%v limit=%v dt=%v\n", s, v, limit, dt))
 	}
+	s += v * dt
 	for {
 		if s < 0 {
 			s = -s
 		} else if s > limit {
-            // Do not rewrite this as 2*limit - s, because that expression 
-			// can sometimes round off to a value > limit.
-			s = limit-(s-limit)
+			s = 2*limit - s
 		} else {
 			break
 		}
 		v = -v
 	}
-	*sref = s
-	*vref = v
+	*sref, *vref = s, v
 }
 
 // Update state of live aliens

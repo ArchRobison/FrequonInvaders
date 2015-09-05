@@ -1,7 +1,6 @@
 package main
 
 import (
-	_ "fmt"
 	"github.com/ArchRobison/FrequonInvaders/coloring"
 	"github.com/ArchRobison/FrequonInvaders/fall"
 	"github.com/ArchRobison/FrequonInvaders/fourier"
@@ -11,6 +10,8 @@ import (
 	"github.com/ArchRobison/FrequonInvaders/universe"
 	"github.com/ArchRobison/Gophetica/math32"
 	"github.com/ArchRobison/Gophetica/nimble"
+	"math/rand"
+	"time"
 )
 
 var winTitle string = "Go-SDL2 Render"
@@ -126,9 +127,8 @@ func initCritterSprites(width, height int32) {
 func (context) Init(width, height int32) {
 	panelWidth := width / 8 / 6 * 6
 
-	universe.Init(width, height)
-
 	fourierPort = nimble.Rect{Left: panelWidth + 1, Top: 0, Right: width, Bottom: height}
+	universe.Init(fourierPort.Size())
 
 	scoreBottom := height
 	scoreTop := scoreBottom - panelWidth/6
@@ -156,6 +156,7 @@ func (context) Init(width, height int32) {
 }
 
 func main() {
+	rand.Seed(time.Now().UnixNano())
 	nimble.AddRenderClient(context{})
 	nimble.Run()
 }

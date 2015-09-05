@@ -23,9 +23,7 @@ src/github.com/veandco/go-sdl2
 3. cd to `src/github.com/ArchRobison/FrequonInvaders`
 4. Run `go build`
 
-## Status (2015-Sept-3)
+## Status (2015-Sept-4)
 
 Much of the code is dummied.  There is some sound.  The score lights work.
-You can interfere and destroy a Frequons and raise the score.
-However, there is a bug (cause unknown) where Frequons seem further right
-than you can move the circular cursor.
+You can interfere and destroy Frequons and raise the score.
