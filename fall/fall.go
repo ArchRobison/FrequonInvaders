@@ -19,12 +19,9 @@ type Invader struct {
 
 var background nimble.PixMap
 
-var black nimble.Pixel = nimble.Gray(0)
-
 func Init(width, height int32) {
-	black = nimble.Gray(0)
 	background = nimble.MakePixMap(width, height, make([]nimble.Pixel, height*width), width)
-	background.Fill(black)
+	background.Fill(nimble.Black)
 }
 
 var lastDotTime float64
@@ -58,7 +55,7 @@ func Draw(pm nimble.PixMap, invaders []Invader) {
 			Bottom: y + tickHalfHeight,
 		}
 		pm.DrawRect(r, inv.Color)
-		background.DrawRect(r, black)
+		background.DrawRect(r, nimble.Black)
 		if drawDot {
 			if doty := r.Top - 1; background.Contains(x, doty) {
 				background.SetPixel(x, doty, inv.Color)

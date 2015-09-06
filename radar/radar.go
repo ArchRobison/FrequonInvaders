@@ -87,7 +87,6 @@ func SetColoring(cm colorMap) {
 			clut[i*width+j] = rgb{r, g, b}
 		}
 	}
-	black := nimble.Gray(0)
 
 	// Construct the frames, incorporating "sweep"
 	for t := int32(0); t < nFrame; t++ {
@@ -106,7 +105,7 @@ func SetColoring(cm colorMap) {
 					c := clut[i*width+j]
 					color = nimble.RGB(c.r*factor, c.g*factor, c.b*factor)
 				} else {
-					color = black
+					color = nimble.Black
 				}
 				pm.SetPixel(j, i, color)
 			}

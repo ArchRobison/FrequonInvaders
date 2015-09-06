@@ -50,8 +50,6 @@ func drawFrequons(pm nimble.PixMap) {
 	fourier.Draw(pm, h)
 }
 
-var white = nimble.Gray(1)
-
 var lastTime float64
 
 func updateClock() (dt float32) {
@@ -75,7 +73,7 @@ func (context) Render(pm nimble.PixMap) {
 
 	// Draw dividers
 	for _, r := range divider {
-		pm.DrawRect(r, white)
+		pm.DrawRect(r, nimble.White)
 	}
 
 	// Fourier view
@@ -90,7 +88,7 @@ func (context) Render(pm nimble.PixMap) {
 			}
 		}
 	}
-	sprite.Draw(pm.Intersect(fourierPort), xf, yf, critterSeq[0][0], white)
+	sprite.Draw(pm.Intersect(fourierPort), xf, yf, critterSeq[0][0], White)
 
 	// Fall view
 	// FIXME - use storage buffer instead of creating new array each time?
