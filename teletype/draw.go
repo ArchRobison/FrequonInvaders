@@ -4,19 +4,19 @@ import (
 	"github.com/ArchRobison/Gophetica/nimble"
 )
 
-func draw(pm nimble.PixMap, text[][]byte) {
+func draw(pm nimble.PixMap, text [][]byte) {
 	width, height := pm.Size()
- 
-    // Clear area
+
+	// Clear area
 	pm.Fill(nimble.Black)
-	
+
 	// Write lines of text
-    for m := range text {
+	for m := range text {
 		x := int32(textLeftMargin)
-		for j := range(text[m]) {
-		    if x>=width {
-			    break
-		    }
+		for j := range text[m] {
+			if x >= width {
+				break
+			}
 			kLimit := width - x
 			if kLimit > charWidth {
 				kLimit = charWidth
@@ -26,7 +26,7 @@ func draw(pm nimble.PixMap, text[][]byte) {
 				if y >= height {
 					break
 				}
-				pixelRow := pm.Row(y)[x:x+kLimit]
+				pixelRow := pm.Row(y)[x : x+kLimit]
 				colorIndex := 0
 				for k := range pixelRow {
 					if mask&(1<<uint(k)) != 0 {
@@ -39,6 +39,5 @@ func draw(pm nimble.PixMap, text[][]byte) {
 			}
 			x += charWidth
 		}
-    }
+	}
 }
-

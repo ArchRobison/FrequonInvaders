@@ -1,8 +1,8 @@
 package teletype
 
-import ( 
-"github.com/ArchRobison/Gophetica/nimble"
-"github.com/ArchRobison/Gophetica/math32"
+import (
+	"github.com/ArchRobison/Gophetica/math32"
+	"github.com/ArchRobison/Gophetica/nimble"
 )
 
 type charRow uint32
