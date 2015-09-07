@@ -19,71 +19,62 @@ func Init(fontFilename string) {
 	Reset()
 }
 
-func getCursorChar() byte {
-	if math.Mod(nimble.Now(), 1) >= 0.5 {
-		return 0 // Cursor character
-	} else {
-		return 0x20 // ASCII space
-	}
-}
-
-func setChar(c byte) {
-	r := &teletypeDisplay[len(teletypeDisplay)-1]
-	if cursorCol >= len(*r) {
-		*r = append(*r, byte(c))
-	} else {
-		(*r)[cursorCol] = c
-	}
+// Return pointer to last line
+func lastLine() *[]byte {
+	return &teletypeDisplay[len(teletypeDisplay)-1]
 }
 
 // State of teletype display
 var (
 	teletypeDisplay [][]byte
-	cursorCol       int
 	displayCursor   bool
 )
 
 func Draw(pm nimble.PixMap) {
-	if displayCursor {
-		setChar(getCursorChar())
+	var r *[]byte = nil
+	if displayCursor && math.Mod(nimble.Now(), 1) >= 0.5 {
+		r = lastLine()
+	}
+	if r != nil {
+		*r = append(*r, 0)
 	}
 	draw(pm, teletypeDisplay[:])
+	if r != nil {
+		*r = (*r)[:len(*r)-1]
+	}
 }
 
 // Reset the teletype state
 func Reset() {
 	teletypeDisplay = [][]byte{{}}
-	cursorCol = 0
 }
 
-// Append one character and advance the cursor
-func AppendChar(c byte) {
-	setChar(c)
-	cursorCol++
+// Print one character on the teletype.
+func PrintChar(c rune) {
+	if c == '\n' {
+		teletypeDisplay = append(teletypeDisplay, []byte{})
+	} else {
+		r := lastLine()
+		*r = append(*r, byte(c))
+	}
 }
 
-// Append a string
-func Append(text string) {
-	r := &teletypeDisplay[len(teletypeDisplay)-1]
-	*r = append((*r)[:cursorCol], text...)
-	cursorCol = len(*r)
-}
-
-// Advance to next line
-func Newline() {
-	teletypeDisplay = append(teletypeDisplay, []byte{})
-	cursorCol = 0
+// Print a string on the teletype
+func Print(text string) {
+	for _, c := range text {
+		PrintChar(c)
+	}
 }
 
 // Move the cursor backwards one position if possible.
 func Backup() {
-	if cursorCol > 0 {
-		setChar(' ')
-		cursorCol--
+	r := lastLine()
+	if n := len(*r); n > 0 {
+		*r = (*r)[:n-1]
 	}
 }
 
-// Return string representation of the line that cursor is on.
+// Return string representation of last line.
 func CursorLine() string {
-	return string(teletypeDisplay[len(teletypeDisplay)-1][:cursorCol])
+	return string(*lastLine())
 }

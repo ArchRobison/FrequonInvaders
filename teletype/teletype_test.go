@@ -13,11 +13,11 @@ func (*context) Init(int32, int32) {
 func (*context) KeyDown(k nimble.Key) {
 	displayCursor = true
 	if 0x20 <= k && k < 0x7F {
-		AppendChar(byte(k))
+		PrintChar(rune(k))
 	} else {
 		switch k {
 		case nimble.KeyReturn:
-			Newline()
+			PrintChar('\n')
 		case nimble.KeyEscape:
 			nimble.Quit()
 		case nimble.KeyBackspace, nimble.KeyDelete:
@@ -30,11 +30,9 @@ var flag bool
 
 func (*context) Render(pm nimble.PixMap) {
 	if !flag {
-		Append("Type some text and 'enter'.")
-		Newline()
-		Append("Try backspace and del.")
-		Newline()
-		Append("Press Esc to quit.")
+		Print("Type some text and 'enter'.\n")
+		Print("Try backspace and del.\n" +
+			"Press Esc to quit.")
 		flag = true
 	}
 	Draw(pm)
