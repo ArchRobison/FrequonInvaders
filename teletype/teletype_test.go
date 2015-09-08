@@ -42,6 +42,6 @@ func (*context) Render(pm nimble.PixMap) {
 func TestTeletype(t *testing.T) {
 	Init("../Characters.png")
 	nimble.AddRenderClient(&context{})
-	nimble.AddKeyClient(&context{})
+	nimble.AddKeyObserver(&context{})
 	nimble.Run()
 }
