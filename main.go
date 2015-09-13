@@ -88,7 +88,7 @@ func (context) Render(pm nimble.PixMap) {
 			}
 		}
 	}
-	sprite.Draw(pm.Intersect(fourierPort), xf, yf, critterSeq[0][0], White)
+	sprite.Draw(pm.Intersect(fourierPort), xf, yf, critterSeq[0][0], nimble.White)
 
 	// Fall view
 	// FIXME - use storage buffer instead of creating new array each time?
