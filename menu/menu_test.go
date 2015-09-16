@@ -34,10 +34,11 @@ func (f *FruitItem) OnSelect() {
 // Requires visual inspection
 func TestMenu(t *testing.T) {
 	i0 := FruitItem{MenuItem{Label: "Apple"}}
-	i1 := FruitItem{MenuItem{Label: "Banana"}}
-	i2 := FruitItem{MenuItem{Label: "Cherry"}}
+	i1 := FruitItem{MenuItem{Label: "Banana", Check: 'c', Flags: Separator}}
+	i2 := FruitItem{MenuItem{Label: "Cherry", Check: 'o', Flags: Separator}}
+	i3 := FruitItem{MenuItem{Label: "Date", Flags: Disabled}}
 	theMenu = Menu{Label: "Fruits",
-		Items: []MenuItemInterface{&i0, &i1, &i2}}
+		Items: []MenuItemInterface{&i0, &i1, &i2, &i3}}
 	nimble.AddRenderClient(&context{})
 	nimble.AddMouseObserver(&theMenu)
 	nimble.Run()

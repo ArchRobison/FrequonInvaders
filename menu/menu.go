@@ -4,28 +4,31 @@ import (
 	"github.com/ArchRobison/Gophetica/nimble"
 )
 
-var (
-	foregroundColor  = nimble.Black
-	backgroundColor  = nimble.White
-	itemHilightColor = nimble.RGB(0.875, 0.875, 1)
-	tabHilightColor  = nimble.RGB(0, 0, 1)
-)
-
-var menuFont *nimble.Font
-
 func init() {
 	var err error
-	menuFont, err = nimble.OpenFont("Roboto-Regular.ttf", 16) // FIXME - do not hardwire
+	menuFont, err = nimble.OpenFont("Roboto-Regular.ttf", 20) // FIXME - do not hardwire
 	if err != nil {
 		panic(err)
 	}
+	checkFont, err = nimble.OpenFont("unicons.1.0.ttf", 20) // FIXME - do not hardwire
+	if err != nil {
+		panic(err)
+	}
+	checkWidth, _ = checkFont.Size(" ")
+	marginWidth = checkWidth/4 + 1
 }
 
+type menuItemFlag uint8
+
+const (
+	Disabled = menuItemFlag(1 << iota)
+	Separator
+)
+
 type MenuItem struct {
-	Label    string
-	Shortcut rune
-	Disabled bool
-	Check    rune
+	Label string
+	Flags menuItemFlag
+	Check rune
 }
 
 func (mip *MenuItem) GetMenuItem() *MenuItem {
@@ -47,6 +50,13 @@ type Menu struct {
 	tabWidth   uint16      // Width of tab
 	tabRect    nimble.Rect // Rectangle bounding the tab
 	itemsRect  nimble.Rect // Rectangle bounding the items
+}
+
+func (m *Menu) TabSize() (width, height int32) {
+	if m.tabWidth == 0 {
+		m.computeTabSize()
+	}
+	return int32(m.tabWidth) + 2*marginWidth, int32(m.itemHeight) + 1
 }
 
 const (
@@ -85,54 +95,4 @@ func (m *Menu) TrackMouse(e nimble.MouseEvent, x, y int32) bool {
 		return true
 	}
 	return false
-}
-
-func (m *Menu) Draw(pm nimble.PixMap, x, y int32) {
-	// Draw the tab
-	if m.tabWidth == 0 {
-		// Lazily compute tabWidth and itemHeight
-		h := menuFont.Height()
-		w, _ := menuFont.Size(m.Label)
-		m.itemHeight = uint16(h)
-		m.tabWidth = uint16(w)
-	}
-	var back, fore nimble.Pixel
-	if m.hilightRow != showNone {
-		back = tabHilightColor
-		fore = backgroundColor
-	} else {
-		back = backgroundColor
-		fore = foregroundColor
-	}
-	m.tabRect = nimble.MakeRect(x, y, int32(m.tabWidth), int32(m.itemHeight))
-	pm.DrawRect(m.tabRect, back)
-	pm.DrawText(x, y, m.Label, fore, menuFont)
-
-	if m.hilightRow != showNone {
-
-		// Draw the items
-		pm.DrawRect(m.itemsRect, backgroundColor)
-		w := int32(m.itemWidth)
-		if w == 0 {
-			// Lazily compute itemsWidth
-			w = int32(m.tabWidth)
-			for i := range m.Items {
-				p := m.Items[i].GetMenuItem()
-				w0, _ := menuFont.Size(p.Label)
-				if w0 > w {
-					w = w0
-				}
-			}
-			m.itemWidth = uint16(w)
-		}
-		h := int32(m.itemHeight)
-		m.itemsRect = nimble.MakeRect(x, m.tabRect.Bottom, w, h*int32(len(m.Items)))
-		for i := range m.Items {
-			yi := m.itemsRect.Top + h*int32(i)
-			if i == int(m.hilightRow-hilightBase) {
-				pm.DrawRect(nimble.MakeRect(x, yi, int32(m.itemWidth), h), itemHilightColor)
-			}
-			pm.DrawText(x, yi, m.Items[i].GetMenuItem().Label, foregroundColor, menuFont)
-		}
-	}
 }
