@@ -64,7 +64,7 @@ func (m *Menu) Draw(pm nimble.PixMap, x, y int32) {
 			// Lazily compute itemsWidth
 			w := int32(m.tabWidth)
 			for i := range m.Items {
-				p := m.Items[i].GetMenuItem()
+				p := m.Items[i].GetItem()
 				w0, _ := menuFont.Size(p.Label)
 				if w0 > w {
 					w = w0
@@ -100,7 +100,7 @@ func (m *Menu) Draw(pm nimble.PixMap, x, y int32) {
 		checkX := x + 1 + marginWidth
 		labelX := x + 2 + 3*marginWidth + checkWidth
 		for i := range m.Items {
-			mi := m.Items[i].GetMenuItem()
+			mi := m.Items[i].GetItem()
 			yi := m.itemsRect.Top + h*int32(i)
 			if i == int(m.hilightRow-hilightBase) {
 				pm.DrawRect(nimble.MakeRect(x, yi, int32(m.itemWidth), h), itemHilightColor)

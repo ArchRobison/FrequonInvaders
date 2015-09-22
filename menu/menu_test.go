@@ -24,21 +24,26 @@ func (*context) Render(pm nimble.PixMap) {
 }
 
 type FruitItem struct {
-	MenuItem
+	Item
 }
 
 func (f *FruitItem) OnSelect() {
 	fmt.Fprintf(os.Stderr, "%v\n", f.Label)
 }
 
+var BananaCherry = RadioState{Value: 0, OnSelect: func(value int) {
+	fmt.Printf("new state = %v\n", value)
+}}
+
 // Requires visual inspection
 func TestMenu(t *testing.T) {
-	i0 := FruitItem{MenuItem{Label: "Apple"}}
-	i1 := FruitItem{MenuItem{Label: "Banana", Check: 'c', Flags: Separator}}
-	i2 := FruitItem{MenuItem{Label: "Cherry", Check: 'o', Flags: Separator}}
-	i3 := FruitItem{MenuItem{Label: "Date", Flags: Disabled}}
+	i0 := FruitItem{Item{Label: "Apple"}}
+	i1 := Add(MakeRadioItem("Banana", &BananaCherry, 0), Separator)
+	i2 := MakeRadioItem("Cherry", &BananaCherry, 1)
+	i3 := FruitItem{Item{Label: "Date", Flags: Disabled | Separator}}
+	i4 := MakeCheckItem("Elderberry", true, func(bool) {})
 	theMenu = Menu{Label: "Fruits",
-		Items: []MenuItemInterface{&i0, &i1, &i2, &i3}}
+		Items: []ItemInterface{&i0, i1, i2, &i3, i4}}
 	nimble.AddRenderClient(&context{})
 	nimble.AddMouseObserver(&theMenu)
 	nimble.Run()

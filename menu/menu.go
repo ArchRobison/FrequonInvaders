@@ -25,24 +25,29 @@ const (
 	Separator
 )
 
-type MenuItem struct {
+type Item struct {
 	Label string
 	Flags menuItemFlag
 	Check rune
 }
 
-func (mip *MenuItem) GetMenuItem() *MenuItem {
-	return mip
+func (i *Item) GetItem() *Item {
+	return i
 }
 
-type MenuItemInterface interface {
-	GetMenuItem() *MenuItem
+type ItemInterface interface {
+	GetItem() *Item
 	OnSelect()
+}
+
+func Add(i ItemInterface, f menuItemFlag) ItemInterface {
+	i.GetItem().Flags |= f
+	return i
 }
 
 type Menu struct {
 	Label      string
-	Items      []MenuItemInterface
+	Items      []ItemInterface
 	x, y       int32       // Upper left corner
 	hilightRow uint8       // 0 = hide items, 1 = highlight none, 2+k = hilight row k
 	itemHeight uint16      // Height of each item (in pixels) or tab

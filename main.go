@@ -225,7 +225,7 @@ var (
 var menuBar = []*menu.Menu{}
 
 type simpleItem struct {
-	menu.MenuItem
+	menu.Item
 	onSelect func()
 }
 
@@ -235,16 +235,22 @@ func (m *simpleItem) OnSelect() {
 
 var beginGameItem, trainingItem, exitItem *simpleItem
 
-func MakeItem(label string, f func()) *simpleItem {
-	return &simpleItem{menu.MenuItem{Label: label}, f}
+func makeSimpleItem(label string, f func()) *simpleItem {
+	return &simpleItem{menu.Item{Label: label}, f}
 }
+
+var letFrequonsMove = menu.RadioState{OnSelect: func(value int) {}}
+
+var maxFrequon = menu.RadioState{Value: 1, OnSelect: func(value int) {}}
+
+var peek = menu.MakeCheckItem("peek", false, func(bool) {})
 
 func setMode(m mode) {
 	menuBarWasPresent := len(menuBar) > 0
 	switch m {
 	case modeSplash, modeName, modeVanity:
 		menuBar = []*menu.Menu{&fileMenu, &displayMenu, &RatingsMenu}
-		fileMenu.Items = []menu.MenuItemInterface{
+		fileMenu.Items = []menu.ItemInterface{
 			beginGameItem,
 			trainingItem,
 			exitItem,
@@ -252,6 +258,15 @@ func setMode(m mode) {
 		exitItem.Flags |= menu.Separator
 	case modeTraining:
 		menuBar = []*menu.Menu{&fileMenu, &displayMenu, &invadersMenu, &colorMenu}
+		list := []menu.ItemInterface{
+			peek,
+			menu.MakeRadioItem("stationary", &letFrequonsMove, 0),
+			menu.MakeRadioItem("moving", &letFrequonsMove, 1),
+		}
+		for k := 0; k <= 13; k++ {
+			list = append(list, menu.MakeRadioItem(fmt.Sprintf("%v", k), &maxFrequon, k))
+		}
+		invadersMenu.Items = list
 	case modeGame:
 		menuBar = menuBar[:0]
 	}
@@ -263,13 +278,13 @@ func setMode(m mode) {
 }
 
 func initMenuItem() {
-	beginGameItem = MakeItem("Begin Game", func() {
+	beginGameItem = makeSimpleItem("Begin Game", func() {
 		setMode(modeGame)
 	})
-	trainingItem = MakeItem("Training", func() {
+	trainingItem = makeSimpleItem("Training", func() {
 		setMode(modeTraining)
 	})
-	exitItem = MakeItem("Quit", func() {
+	exitItem = makeSimpleItem("Quit", func() {
 		nimble.Quit()
 	})
 }
