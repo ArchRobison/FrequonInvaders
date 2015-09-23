@@ -114,7 +114,7 @@ func (context) Render(pm nimble.PixMap) {
 			if i < len(critterSeq[k]) {
 				// FIXME - draw only if close
 				// FIXME - fade according to distance
-				sprite.Draw(pm.Intersect(fourierPort), int32(math32.Round(c.Sx)), int32(math32.Round(c.Sy)), critterSeq[k][i], Pastel[k][0])
+				sprite.Draw(pm.Intersect(fourierPort), int32(math32.Round(c.Sx)), int32(math32.Round(c.Sy)), critterSeq[k][i], Pastel[c.Id][0])
 			}
 		}
 	}
@@ -127,7 +127,7 @@ func (context) Render(pm nimble.PixMap) {
 		inv[k] = fall.Invader{
 			Progress:  c.Progress,
 			Amplitude: c.Amplitude,
-			Color:     Pastel[k][0]}
+			Color:     Pastel[c.Id][0]}
 	}
 	fall.Draw(pm.Intersect(fallPort), inv)
 

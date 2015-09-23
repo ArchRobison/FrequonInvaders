@@ -15,7 +15,7 @@ type Critter struct {
 	fallRate  float32    // rate of maturation in maturity/sec
 	health    healthType // Initially initialHealth.  Subtracted down to 0. Negative values are death sequence values.  Jumps down to finalHealth at end of sequence
 	Show      bool       // If true, show in space domain
-	id        int8       // Index into pastels
+	Id        int8       // Index into pastels
 }
 
 type healthType int16
@@ -41,7 +41,7 @@ func Init(width, height int32) {
 	xSize, ySize = float32(width), float32(height)
 	Zoo = zooStorage[:1]
 	for k := range zooStorage {
-		zooStorage[k].id = int8(k)
+		zooStorage[k].Id = int8(k)
 	}
 	velocityMax = 0
 	// Original sources used (ySize/32) for the square-root of the kill radius.
@@ -110,7 +110,7 @@ func updateLive(dt float32) {
 				c.health -= healthType(dt * (float32(initialHealth) / killTime))
 				if c.health <= 0 {
 					c.health = -1 // Transition to death sequence
-					sound.Play(sound.Twang, alienPitch[c.id])
+					sound.Play(sound.Twang, alienPitch[c.Id])
 				}
 				c.Show = true
 			} else {
@@ -143,11 +143,11 @@ func cullDead() {
 		if Zoo[j].health > deathThreshold {
 			// Surivor
 		} else {
-			// Cull corpse by moving id to end and shrinking slice
+			// Cull corpse by moving Id to end and shrinking slice
 			k := len(Zoo) - 1
-			deadId := Zoo[j].id
+			deadId := Zoo[j].Id
 			Zoo[j] = Zoo[k]
-			Zoo[k].id = deadId
+			Zoo[k].Id = deadId
 			Zoo = zooStorage[:k]
 		}
 	}
@@ -219,12 +219,12 @@ func tryBirth(dt float32) {
 	// Swap in random id
 	avail := len(zooStorage) - len(Zoo)
 	k := rand.Intn(avail) + j
-	zooStorage[j].id, zooStorage[k].id = zooStorage[k].id, zooStorage[j].id
+	zooStorage[j].Id, zooStorage[k].Id = zooStorage[k].Id, zooStorage[j].Id
 	Zoo = zooStorage[:j+1]
 
 	// Initialize the alien
 	Zoo[j].initAlien()
-	sound.Play(sound.AntiTwang, alienPitch[Zoo[j].id])
+	sound.Play(sound.AntiTwang, alienPitch[Zoo[j].Id])
 }
 
 // FIXME - try to avoid coupling unverse Model to View this way.
