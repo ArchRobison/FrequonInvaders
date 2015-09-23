@@ -14,7 +14,7 @@ const (
 	BlueBit
 	ColorBits      = RedBit | GreenBit | BlueBit                 // Color bits
 	CoordinateBits = RealBit | ImagBit | MagnitudeBit | PhaseBit // Coordinate system bits
-    AllBits = ColorBits| CoordinateBits
+	AllBits        = ColorBits | CoordinateBits
 )
 
 func (scheme SchemeBits) Color(x, y float32) (r, g, b float32) {

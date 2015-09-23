@@ -113,7 +113,8 @@ func (context) Render(pm nimble.PixMap) {
 			i := c.ImageIndex()
 			if i < len(critterSeq[k]) {
 				// FIXME - draw only if close
-				sprite.Draw(pm.Intersect(fourierPort), int32(math32.Round(c.Sx)), int32(math32.Round(c.Sy)), critterSeq[k][i], nimble.Gray(0.5)) // FIXME - use pastel instead of gray
+				// FIXME - fade according to distance
+				sprite.Draw(pm.Intersect(fourierPort), int32(math32.Round(c.Sx)), int32(math32.Round(c.Sy)), critterSeq[k][i], Pastel[k][0])
 			}
 		}
 	}
@@ -123,11 +124,10 @@ func (context) Render(pm nimble.PixMap) {
 	inv := invStorage[0 : len(universe.Zoo)-1]
 	for k := range inv {
 		c := &universe.Zoo[k+1]
-		// FIXME - use pastel for color
 		inv[k] = fall.Invader{
 			Progress:  c.Progress,
 			Amplitude: c.Amplitude,
-			Color:     nimble.RGB(1, 0.5, 1)}
+			Color:     Pastel[k][0]}
 	}
 	fall.Draw(pm.Intersect(fallPort), inv)
 
@@ -148,10 +148,22 @@ var divider [3]nimble.Rect
 var critterSeq [universe.MaxCritter][]sprite.Sprite
 
 func initCritterSprites(width, height int32) {
-	radius := height / 32
+	// The factor .75/64. should yield the same size as the original game
+	// for a 1920x1080 display
+	radius := int32(math32.Sqrt(float32(width*height)) * (.75 / 64.))
 	const frameCount = 60
 	for k := range critterSeq {
 		critterSeq[k] = sprite.MakeAnimation(int(radius), k == 0, frameCount)
+	}
+}
+
+const NPastel = 32
+
+var Pastel [universe.MaxCritter][NPastel]nimble.Pixel
+
+func initPastel() {
+	for k := range Pastel {
+		coloring.PastelFade(Pastel[k][:], k, universe.MaxCritter)
 	}
 }
 
@@ -160,6 +172,7 @@ var screenWidth, screenHeight int32
 func (context) Init(width, height int32) {
 	screenWidth, screenHeight = width, height
 	initCritterSprites(width, height)
+	initPastel()
 	setMode(modeSplash) // N.B. also causes partitionScreen to be called
 }
 
@@ -239,11 +252,19 @@ func makeSimpleItem(label string, f func()) *simpleItem {
 	return &simpleItem{menu.Item{Label: label}, f}
 }
 
-var letFrequonsMove = menu.RadioState{OnSelect: func(value int) {}}
+var letFrequonsMove = menu.RadioState{OnSelect: func(value int) {
+	if value == 0 {
+		universe.SetVelocityMax(0)
+	} else {
+		universe.SetVelocityMax(30. / 1440. * math32.Sqrt(float32(screenWidth*screenHeight)))
+	}
+}}
 
-var maxFrequon = menu.RadioState{Value: 1, OnSelect: func(value int) {}}
+var maxFrequon = menu.RadioState{Value: 1, OnSelect: func(value int) {
+	universe.SetNLiveMax(value)
+}}
 
-var peek = menu.MakeCheckItem("peek", false, func(bool) {})
+var peek = menu.MakeCheckItem("peek", false, universe.SetShowAlways)
 
 func setMode(m mode) {
 	menuBarWasPresent := len(menuBar) > 0
@@ -284,7 +305,7 @@ func initMenuItem() {
 	trainingItem = makeSimpleItem("Training", func() {
 		setMode(modeTraining)
 	})
-	exitItem = makeSimpleItem("Quit", func() {
+	exitItem = makeSimpleItem("Exit", func() {
 		nimble.Quit()
 	})
 }

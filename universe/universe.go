@@ -39,10 +39,11 @@ var Zoo []Critter
 
 func Init(width, height int32) {
 	xSize, ySize = float32(width), float32(height)
-	Zoo = zooStorage[0:1]
+	Zoo = zooStorage[:1]
 	for k := range zooStorage {
 		zooStorage[k].id = int8(k)
 	}
+	velocityMax = 0
 	// Original sources used (ySize/32) for the square-root of the kill radius.
 	// The formula here gives about same answer for widescreen monitors,
 	// while adjusting more sensible for other aspect ratios.
@@ -113,7 +114,7 @@ func updateLive(dt float32) {
 				}
 				c.Show = true
 			} else {
-				c.Show = false
+				c.Show = showAlways
 			}
 		} else {
 			// Dying alien
@@ -155,12 +156,21 @@ func cullDead() {
 var (
 	birthRate   float32 = 1 // units = per second, only an average
 	nLiveMax            = 1
-	velocityMax float32 = 1
+	velocityMax float32 = 60 // units = pixels per second
 	nKill       int     = 0
 	isPractice          = false
 )
 
 const π = math32.Pi
+
+func (c *Critter) initAlienVelocity() {
+	// Choose random velocity
+	// This peculiar 2D distibution was in the original sources.
+	// It was probably an error, but is now traditional in Frequon Invaders.
+	// It biases towards diagonal directions
+	c.vx = math32.Cos(2*π*rand.Float32()) * velocityMax
+	c.vy = math32.Sin(2*π*rand.Float32()) * velocityMax
+}
 
 // Initialize alien Critter to its birth state.
 func (c *Critter) initAlien() {
@@ -168,12 +178,7 @@ func (c *Critter) initAlien() {
 	c.Sx = rand.Float32() * xSize
 	c.Sy = rand.Float32() * ySize
 
-	// Choose random velocity
-	// This peculiar 2D distibution was in the original sources.
-	// It was probably an error, but is now traditional in Frequon Invaders.
-	// It biases towards diagonal directions
-	c.vx = math32.Cos(2*π*rand.Float32()) * velocityMax
-	c.vy = math32.Sin(2*π*rand.Float32()) * velocityMax
+	c.initAlienVelocity()
 
 	c.Amplitude = 0
 
@@ -182,7 +187,16 @@ func (c *Critter) initAlien() {
 	c.fallRate = (rand.Float32() + 1) * 0.0256
 
 	c.health = initialHealth
-	c.Show = false
+	c.Show = showAlways
+}
+
+var showAlways = false
+
+func SetShowAlways(value bool) {
+	showAlways = value
+	for k := 1; k < len(Zoo); k++ {
+		Zoo[k].Show = showAlways
+	}
 }
 
 func tryBirth(dt float32) {
@@ -235,4 +249,34 @@ func init() {
 			panic("alienPitch wrong")
 		}
 	}
+}
+
+// Set maximum absolute velocity to v pixels per second
+func SetVelocityMax(v float32) {
+	velocityMax = v
+	for k := 1; k < len(Zoo); k++ {
+		c := &Zoo[k]
+		u := math32.Hypot(c.vx, c.vy)
+		if u > 0.001 {
+			// Scale velocity to new max
+			f := velocityMax / u
+			c.vx *= f
+			c.vy *= f
+		} else {
+			// Critter is essentially stationary.  Give it a new velocity.
+			c.initAlienVelocity()
+		}
+	}
+}
+
+// Set maximum number of live aliens
+func SetNLiveMax(n int) {
+	if n < 0 || n > MaxCritter-1 {
+		panic(fmt.Sprintf("SetNLiveMax: n=%v", n))
+	}
+	if n < len(Zoo)-1 {
+		// Clip zoo
+		Zoo = zooStorage[:n+1]
+	}
+	nLiveMax = n
 }
