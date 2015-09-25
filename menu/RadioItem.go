@@ -1,6 +1,7 @@
 package menu
 
-// State of a "radio button" menu item
+// State of a "radio button" menu item.
+// Normally shared by several RadioItem objects.
 type RadioState struct {
 	Value    int
 	OnSelect func(value int)
@@ -9,20 +10,22 @@ type RadioState struct {
 // A "radio button" menu item
 type RadioItem struct {
 	Item
-	target *RadioState
-	value  int
+	state *RadioState
+	value int
 }
 
 func (m *RadioItem) OnSelect() {
-	t := m.target
-	if t.Value != m.value {
-		t.Value = m.value
-		t.OnSelect(m.value)
+	s := m.state
+	if s.Value != m.value {
+		s.Value = m.value
+		if s.OnSelect != nil {
+			s.OnSelect(m.value)
+		}
 	}
 }
 
 func (m *RadioItem) GetItem() *Item {
-	if m.target.Value == m.value {
+	if m.state.Value == m.value {
 		m.Item.Check = 'o'
 	} else {
 		m.Item.Check = 0
@@ -30,9 +33,9 @@ func (m *RadioItem) GetItem() *Item {
 	return &m.Item
 }
 
-func MakeRadioItem(label string, target *RadioState, value int) *RadioItem {
+func MakeRadioItem(label string, state *RadioState, value int) *RadioItem {
 	return &RadioItem{
 		Item{Label: label},
-		target,
+		state,
 		value}
 }

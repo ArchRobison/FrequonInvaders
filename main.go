@@ -28,12 +28,17 @@ func drawFrequons(pm nimble.PixMap) {
 	c := universe.Zoo
 	h := harmonicStorage[:len(c)]
 
-	// Compute L1 norm of amplitudes
-	norm := float32(0)
-	for i := range h {
-		norm += math32.Abs(c[i].Amplitude)
+	var ampScale float32
+	if autoGain.Value {
+		// Compute L1 norm of amplitudes
+		norm := float32(0)
+		for i := range c {
+			norm += math32.Abs(c[i].Amplitude)
+		}
+		ampScale = 1 / norm
+	} else {
+		ampScale = 1 / float32(len(c))
 	}
-	invNorm := 1 / norm
 
 	// Set up harmonics
 	// (cx,cy) is center of fourier view
@@ -47,7 +52,7 @@ func drawFrequons(pm nimble.PixMap) {
 		h[i].Ωy = ωy
 		h[i].Phase = α*ωx + β*ωy
 		// Scale amplitude so that DFT values fit within domain of color lookup table.
-		h[i].Amplitude = c[i].Amplitude * invNorm
+		h[i].Amplitude = c[i].Amplitude * ampScale
 	}
 	fourier.Draw(pm, h)
 }
@@ -226,89 +231,6 @@ const (
 	modeName
 	modeVanity
 )
-
-var (
-	fileMenu     = menu.Menu{Label: "File"}
-	displayMenu  = menu.Menu{Label: "Display"}
-	RatingsMenu  = menu.Menu{Label: "Ratings"}
-	invadersMenu = menu.Menu{Label: "Invaders"}
-	colorMenu    = menu.Menu{Label: "Color"}
-)
-
-var menuBar = []*menu.Menu{}
-
-type simpleItem struct {
-	menu.Item
-	onSelect func()
-}
-
-func (m *simpleItem) OnSelect() {
-	m.onSelect()
-}
-
-var beginGameItem, trainingItem, exitItem *simpleItem
-
-func makeSimpleItem(label string, f func()) *simpleItem {
-	return &simpleItem{menu.Item{Label: label}, f}
-}
-
-var letFrequonsMove = menu.RadioState{OnSelect: func(value int) {
-	if value == 0 {
-		universe.SetVelocityMax(0)
-	} else {
-		universe.SetVelocityMax(30. / 1440. * math32.Sqrt(float32(screenWidth*screenHeight)))
-	}
-}}
-
-var maxFrequon = menu.RadioState{Value: 1, OnSelect: func(value int) {
-	universe.SetNLiveMax(value)
-}}
-
-var peek = menu.MakeCheckItem("peek", false, universe.SetShowAlways)
-
-func setMode(m mode) {
-	menuBarWasPresent := len(menuBar) > 0
-	switch m {
-	case modeSplash, modeName, modeVanity:
-		menuBar = []*menu.Menu{&fileMenu, &displayMenu, &RatingsMenu}
-		fileMenu.Items = []menu.ItemInterface{
-			beginGameItem,
-			trainingItem,
-			exitItem,
-		}
-		exitItem.Flags |= menu.Separator
-	case modeTraining:
-		menuBar = []*menu.Menu{&fileMenu, &displayMenu, &invadersMenu, &colorMenu}
-		list := []menu.ItemInterface{
-			peek,
-			menu.MakeRadioItem("stationary", &letFrequonsMove, 0),
-			menu.MakeRadioItem("moving", &letFrequonsMove, 1),
-		}
-		for k := 0; k <= 13; k++ {
-			list = append(list, menu.MakeRadioItem(fmt.Sprintf("%v", k), &maxFrequon, k))
-		}
-		invadersMenu.Items = list
-	case modeGame:
-		menuBar = menuBar[:0]
-	}
-	currentMode = m
-	if (len(menuBar) != 0) != menuBarWasPresent {
-		// Menu bar appeared or disappeared, so repartition
-		partitionScreen(screenWidth, screenHeight)
-	}
-}
-
-func initMenuItem() {
-	beginGameItem = makeSimpleItem("Begin Game", func() {
-		setMode(modeGame)
-	})
-	trainingItem = makeSimpleItem("Training", func() {
-		setMode(modeTraining)
-	})
-	exitItem = makeSimpleItem("Exit", func() {
-		nimble.Quit()
-	})
-}
 
 func main() {
 	initMenuItem()

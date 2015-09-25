@@ -9,7 +9,9 @@ type CheckItem struct {
 
 func (m *CheckItem) OnSelect() {
 	m.Value = !m.Value
-	m.Handler(m.Value)
+	if m.Handler != nil {
+		m.Handler(m.Value)
+	}
 }
 
 func (m *CheckItem) GetItem() *Item {
