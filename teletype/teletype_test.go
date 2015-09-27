@@ -11,7 +11,7 @@ func (*context) Init(int32, int32) {
 }
 
 func (*context) KeyDown(k nimble.Key) {
-	displayCursor = true
+	DisplayCursor(true)
 	if 0x20 <= k && k < 0x7F {
 		PrintChar(rune(k))
 	} else {

@@ -2,13 +2,15 @@ package main
 
 import (
 	"github.com/ArchRobison/FrequonInvaders/phrase"
+	"github.com/ArchRobison/FrequonInvaders/sound"
 	"github.com/ArchRobison/FrequonInvaders/teletype"
-	"strings"
 )
 
 func startBootSequence() {
 	bootSequenceIndex = 0
 	bootSequenceFrac = 0
+	teletype.DisplayCursor(false)
+	teletype.Reset()
 }
 
 /* The "boot sequence" was created in the 1990's to create eye candy while
@@ -28,11 +30,13 @@ func advanceBootSequence(dt float32) {
 	n := bootSequenceIndex
 	bootSequenceIndex = n + 1
 	if 1 <= n && n <= 8 {
-		teletype.Print(strings.ToUpper(phrase.Generate(rune('0' + n))))
+		teletype.Print(phrase.Generate(rune('0' + n)))
 		teletype.PrintChar('\n')
 	}
+	if 0 < n && n <= 8 {
+		sound.Play(sound.Wobble, float32(n+1)*0.25)
+	}
 	switch n {
-	case 0:
 	case 1:
 		break
 	case 2, 3, 4:
@@ -41,10 +45,13 @@ func advanceBootSequence(dt float32) {
 		fallIsVisible = true
 	case 6:
 		radarIsVisible = true
+		radarIsRunning = true
 	case 7:
 		scoreIsVisible = true
 	case 9:
+		// C++ original does following actions for n==8, but that hides the 8th techobabble.
 		fourierIsVisible = true
+		setZoom(zoomGrow)
 		teletype.Reset()
 	}
 }

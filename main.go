@@ -9,6 +9,7 @@ import (
 	"github.com/ArchRobison/FrequonInvaders/radar"
 	"github.com/ArchRobison/FrequonInvaders/score"
 	"github.com/ArchRobison/FrequonInvaders/sprite"
+	"github.com/ArchRobison/FrequonInvaders/teletype"
 	"github.com/ArchRobison/FrequonInvaders/universe"
 	"github.com/ArchRobison/Gophetica/math32"
 	"github.com/ArchRobison/Gophetica/nimble"
@@ -16,15 +17,21 @@ import (
 	"time"
 )
 
-var winTitle string = "Go-SDL2 Render"
-var winWidth, winHeight int = 800, 600
+const title = "Frequon Invaders 2.3"
+const edition = "(Go Edition)"
+
+const debugMode = true
+
+var winTitle string = title
+
+var winWidth, winHeight int = 1024, 768
 
 type context struct {
 }
 
 var harmonicStorage [universe.MaxCritter]fourier.Harmonic
 
-func drawFrequons(pm nimble.PixMap) {
+func drawFrequonsFourier(pm nimble.PixMap) {
 	c := universe.Zoo
 	h := harmonicStorage[:len(c)]
 
@@ -39,10 +46,13 @@ func drawFrequons(pm nimble.PixMap) {
 	} else {
 		ampScale = 1 / float32(len(c))
 	}
+	// FIXME - use scheme from BoxFractionAndScheme when drawing the fourier view
+	fracX, fracY, _ := universe.BoxFractionAndScheme()
+	sizeX, sizeY := pm.Size()
 
 	// Set up harmonics
 	// (cx,cy) is center of fourier view
-	cx, cy := 0.5*float32(pm.Width()), 0.5*float32(pm.Height())
+	cx, cy := 0.5*float32(sizeX)*fracX, 0.5*float32(sizeY)*fracY
 	α, β := -0.5*cx, -0.5*cy
 	const ωScale = 0.001
 	for i := range h {
@@ -54,7 +64,37 @@ func drawFrequons(pm nimble.PixMap) {
 		// Scale amplitude so that DFT values fit within domain of color lookup table.
 		h[i].Amplitude = c[i].Amplitude * ampScale
 	}
-	fourier.Draw(pm, h)
+
+	marginX := int32(math32.Round(0.5 * float32(sizeX) * (1 - fracX)))
+	marginY := int32(math32.Round(0.5 * float32(sizeY) * (1 - fracY)))
+	fourier.Draw(pm.Intersect(nimble.Rect{
+		Left:   marginX,
+		Right:  sizeX - marginX,
+		Top:    marginY,
+		Bottom: sizeY - marginY,
+	}), h)
+	if marginX != 0 || marginY != 0 {
+		pm.DrawRect(nimble.Rect{Left: 0, Right: sizeX, Top: 0, Bottom: marginY}, nimble.Black)
+		pm.DrawRect(nimble.Rect{Left: 0, Right: sizeX, Top: sizeY - marginY, Bottom: sizeY}, nimble.Black)
+		pm.DrawRect(nimble.Rect{Left: 0, Right: marginX, Top: marginY, Bottom: sizeY - marginY}, nimble.Black)
+		pm.DrawRect(nimble.Rect{Left: sizeX - marginX, Right: sizeX, Top: marginY, Bottom: sizeY - marginY}, nimble.Black)
+	}
+}
+
+func drawFrequonsSpatial(pm nimble.PixMap, xf, yf int32) {
+	// Draw in spatial domain
+	for k := 1; k < len(universe.Zoo); k++ {
+		c := &universe.Zoo[k]
+		if c.Show {
+			i := c.ImageIndex()
+			if i < len(critterSeq[k]) {
+				// FIXME - draw only if close
+				// FIXME - fade according to distance
+				sprite.Draw(pm, int32(math32.Round(c.Sx)), int32(math32.Round(c.Sy)), critterSeq[k][i], Pastel[c.Id][0])
+			}
+		}
+	}
+	sprite.Draw(pm, xf, yf, critterSeq[0][0], nimble.White)
 }
 
 var lastTime float64
@@ -79,9 +119,10 @@ func (context) KeyDown(k nimble.Key) {
 		case modeSplash, modeVanity:
 			nimble.Quit()
 		case modeTraining:
-			setMode(modeVanity)
+			youLose()
 		case modeGame:
 			// FIXME - need to handle as quit with current score
+			youLose()
 		case modeName:
 			// FIXME - ask for confirmation
 			nimble.Quit()
@@ -98,49 +139,77 @@ func (context) ObserveMouse(event nimble.MouseEvent, x, y int32) {
 	}
 }
 
+var (
+	fourierIsVisible = false
+	fallIsVisible    = false
+	radarIsVisible   = false
+	radarIsRunning   = false
+	scoreIsVisible   = false
+	dividerCount     = 0
+)
+
 func (context) Render(pm nimble.PixMap) {
 	dt := updateClock()
 
-	// Update universe
-	xf, yf := fourierPort.RelativeToLeftTop(mouseX, mouseY)
-	universe.Update(dt, xf, yf)
+	// Advance the boot sequence
+	advanceBootSequence(dt)
 
 	// Draw dividers
-	for _, r := range divider {
-		pm.DrawRect(r, nimble.White)
-	}
-
-	// Fourier view
-	drawFrequons(pm.Intersect(fourierPort))
-	for k := 1; k < len(universe.Zoo); k++ {
-		c := &universe.Zoo[k]
-		if c.Show {
-			i := c.ImageIndex()
-			if i < len(critterSeq[k]) {
-				// FIXME - draw only if close
-				// FIXME - fade according to distance
-				sprite.Draw(pm.Intersect(fourierPort), int32(math32.Round(c.Sx)), int32(math32.Round(c.Sy)), critterSeq[k][i], Pastel[c.Id][0])
-			}
+	for i, r := range divider {
+		if i < dividerCount {
+			pm.DrawRect(r, nimble.White)
+		} else {
+			pm.DrawRect(r, nimble.Black)
 		}
 	}
-	sprite.Draw(pm.Intersect(fourierPort), xf, yf, critterSeq[0][0], nimble.White)
+
+	if fourierIsVisible {
+		// Update universe
+		xf, yf := fourierPort.RelativeToLeftTop(mouseX, mouseY)
+		switch universe.Update(dt, xf, yf) {
+		case universe.GameWin:
+			youWin()
+		case universe.GameLose:
+			youLose()
+		}
+		updateZoom(dt)
+
+		// Fourier view
+		drawFrequonsFourier(pm.Intersect(fourierPort))
+		drawFrequonsSpatial(pm.Intersect(fourierPort), xf, yf)
+	} else {
+		// Teletype view
+		teletype.Draw(pm.Intersect(fourierPort))
+	}
 
 	// Fall view
-	inv := invStorage[0 : len(universe.Zoo)-1]
-	for k := range inv {
-		c := &universe.Zoo[k+1]
-		inv[k] = fall.Invader{
-			Progress:  c.Progress,
-			Amplitude: c.Amplitude,
-			Color:     Pastel[c.Id][0]}
+	if fallIsVisible {
+		inv := invStorage[0 : len(universe.Zoo)-1]
+		for k := range inv {
+			c := &universe.Zoo[k+1]
+			inv[k] = fall.Invader{
+				Progress:  c.Progress,
+				Amplitude: c.Amplitude,
+				Color:     Pastel[c.Id][0]}
+		}
+		fall.Draw(pm.Intersect(fallPort), inv)
+	} else {
+		pm.DrawRect(fallPort, nimble.Black)
 	}
-	fall.Draw(pm.Intersect(fallPort), inv)
 
 	// Radar view
-	radar.Draw(pm.Intersect(radarPort), true)
+	if radarIsVisible {
+		radar.Draw(pm.Intersect(radarPort), radarIsRunning)
+	} else {
+		pm.DrawRect(radarPort, nimble.Black)
+	}
 
 	// Score
-	score.Draw(pm.Intersect(scorePort), universe.NKill())
+	if scoreIsVisible {
+		score.Draw(pm.Intersect(scorePort), universe.NKill())
+	} else {
+		pm.DrawRect(scorePort, nimble.Black)
+	}
 
 	// Menu bar
 	if len(menuBar) > 0 {
@@ -179,6 +248,13 @@ func (context) Init(width, height int32) {
 	initCritterSprites(width, height)
 	initPastel()
 	setMode(modeSplash) // N.B. also causes partitionScreen to be called
+	teletype.Init("Characters.png")
+	teletype.Print(title + "\n")
+	teletype.Print(edition + "\n")
+	teletype.Print("By Arch D. Robison\n")
+	if debugMode {
+		teletype.Print("[debug mode]\n")
+	}
 }
 
 func partitionScreen(width, height int32) {
@@ -216,8 +292,17 @@ func partitionScreen(width, height int32) {
 	radar.Init(radarPort.Size())
 	score.Init(scorePort.Size())
 	radar.SetColoring(coloring.AllBits)
-	fourier.Init(fourierPort.Size())
+	// There is no fourer.Init routine since the zoom changes its display size
 	fourier.SetColoring(coloring.AllBits)
+}
+
+func youLose() {
+	setZoom(zoomShrink)
+	radarIsRunning = false
+}
+
+func youWin() {
+	setZoom(zoomShrink)
 }
 
 type mode int8
@@ -233,6 +318,7 @@ const (
 )
 
 func main() {
+	nimble.SetWindowTitle(title + " " + edition)
 	initMenuItem()
 	rand.Seed(time.Now().UnixNano())
 	nimble.AddRenderClient(context{})

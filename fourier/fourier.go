@@ -41,9 +41,6 @@ func SetColoring(cm colorMap) {
 	}
 }
 
-func Init(width, height int32) {
-}
-
 func Draw(pm nimble.PixMap, harmonics []Harmonic) {
 	n := len(harmonics)
 	w := make([]complex64, n)

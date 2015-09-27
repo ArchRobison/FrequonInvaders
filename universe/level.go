@@ -45,8 +45,9 @@ func setDifficulty(n int) {
 		return
 	}
 
-	if n == 64 {
-		YouWin()
+	if n >= 64 {
+		gameState = GameWin
+		return
 	}
 
 	// Set nLiveMax, which is the max number of aliens simultaneously running.
@@ -175,7 +176,6 @@ func setDifficulty(n int) {
 	}
 }
 
-// FIXME - use BoxFraction when drawing the fourier view
 func BoxFractionAndScheme() (fracX, fracY float32, s coloring.SchemeBits) {
 	fracX = compressX
 	fracY = compressY
@@ -183,10 +183,37 @@ func BoxFractionAndScheme() (fracX, fracY float32, s coloring.SchemeBits) {
 	return
 }
 
+func SetBoxFraction(frac float32) {
+	if frac < 0 || frac > 1 {
+		panic("SetBoxFraction: bad frac")
+	}
+	compressX = frac
+	compressY = frac
+}
+
 func NKill() int {
 	return nKill
 }
 
-// FIXME - expand stub
-func YouWin() {
+func BeginGame(isPractice_ bool) {
+	SetNLiveMax(0)
+	nKill = 0
+
+	if isPractice {
+		// Leave visibility to however user currently has it set.
+	} else {
+		showAlways = false
+	}
+	isPractice = isPractice_
+	gameState = GameActive
 }
+
+type GameState int8
+
+var gameState GameState
+
+const (
+	GameActive = GameState(iota)
+	GameLose
+	GameWin
+)

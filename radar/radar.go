@@ -122,5 +122,7 @@ func Draw(pm nimble.PixMap, running bool) {
 	}
 	src := nimble.MakePixMap(width, height, getFrame(frameCounter), width)
 	pm.Copy(0, 0, &src)
-	frameCounter = (frameCounter + 1) % (int32(len(frameStorage)) / frameSize)
+	if running {
+		frameCounter = (frameCounter + 1) % (int32(len(frameStorage)) / frameSize)
+	}
 }

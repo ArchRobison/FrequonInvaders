@@ -5,6 +5,9 @@ import (
 )
 
 func draw(pm nimble.PixMap, text [][]byte) {
+	if teletypeFont == nil {
+		panic("teletype font missing")
+	}
 	width, height := pm.Size()
 
 	// Clear area
@@ -21,7 +24,8 @@ func draw(pm nimble.PixMap, text [][]byte) {
 			if kLimit > charWidth {
 				kLimit = charWidth
 			}
-			for i, mask := range teletypeFont[text[m][j]] {
+			c := text[m][j]
+			for i, mask := range teletypeFont[c] {
 				y := int32(textTopMargin + m*textLineHeight + i)
 				if y >= height {
 					break

@@ -38,6 +38,7 @@ func updateZoom(dt float32) {
 		universe.SetBoxFraction(min / (min + (max-min)*(1-z)))
 	} else {
 		fourierIsVisible = false
+		setMode(modeVanity)
 		// FIXME - call doEndOfGame()
 	}
 }

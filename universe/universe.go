@@ -52,7 +52,7 @@ func Init(width, height int32) {
 
 // Update advances the universe forwards by time interval dt,
 // using (selfX,selfY) as the coordinates the player.
-func Update(dt float32, selfX, selfY int32) {
+func Update(dt float32, selfX, selfY int32) GameState {
 	c := Zoo
 	if len(c) < 1 {
 		panic("universe.Zoo is empty")
@@ -64,6 +64,7 @@ func Update(dt float32, selfX, selfY int32) {
 	updateLive(dt)
 	cullDead()
 	tryBirth(dt)
+	return gameState
 }
 
 var (
@@ -103,6 +104,17 @@ func updateLive(dt float32) {
 		// Update health
 		if c.health > 0 {
 			// Healthy alien
+			if c.Progress >= 1 {
+				// Alien reached full power!
+				if isPractice {
+					// Remove alien
+					c.health = deathThreshold
+					continue
+				} else {
+					// Alien lands - you lose
+					gameState = GameLose
+				}
+			}
 			dx := c.Sx - x0
 			dy := c.Sy - y0
 			if dx*dx+dy*dy <= killRadius2 {

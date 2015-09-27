@@ -23,8 +23,9 @@ src/github.com/veandco/go-sdl2
 3. cd to `src/github.com/ArchRobison/FrequonInvaders`
 4. Run `go build`
 
-## Status (2015-Sept-22)
+## Status (2015-Sept-27)
 
-Much of the code is dummied.  There is some sound.  The score lights work.
+Part of the code is dummied.  There is some sound.  The score lights work.
+Boot sequence mostly works, with zoom effect for Fourier view.
 In training mode, the Invaders menu works.
 You can interfere and destroy Frequons and raise the score.

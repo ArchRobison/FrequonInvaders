@@ -3,14 +3,15 @@ package teletype
 import (
 	"github.com/ArchRobison/Gophetica/nimble"
 	"math"
+	"unicode"
 )
 
 const (
 	charWidth      = 24
 	charHeight     = 32
 	textLineHeight = 40
-	textTopMargin  = 8
-	textLeftMargin = 8
+	textTopMargin  = 24
+	textLeftMargin = 24
 )
 
 func Init(fontFilename string) {
@@ -26,7 +27,7 @@ func lastLine() *[]byte {
 
 // State of teletype display
 var (
-	teletypeDisplay [][]byte
+	teletypeDisplay = [][]byte{{}}
 	displayCursor   bool
 )
 
@@ -55,7 +56,7 @@ func PrintChar(c rune) {
 		teletypeDisplay = append(teletypeDisplay, []byte{})
 	} else {
 		r := lastLine()
-		*r = append(*r, byte(c))
+		*r = append(*r, byte(unicode.ToUpper(c)))
 	}
 }
 
@@ -77,4 +78,8 @@ func Backup() {
 // Return string representation of last line.
 func CursorLine() string {
 	return string(*lastLine())
+}
+
+func DisplayCursor(display bool) {
+	displayCursor = display
 }
