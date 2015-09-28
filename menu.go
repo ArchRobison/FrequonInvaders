@@ -42,13 +42,8 @@ var peek = menu.MakeCheckItem("peek", false, universe.SetShowAlways)
 
 // FIXME -split this routine into two routines, one for setting up the menus
 // and one for setting other state.
-func setMode(m mode) {
+func setMenus(m mode) {
 	menuBarWasPresent := len(menuBar) > 0
-	fourierIsVisible = false
-	fallIsVisible = false
-	radarIsVisible = false
-	scoreIsVisible = false
-	dividerCount = 0
 	switch m {
 	case modeSplash, modeName, modeVanity:
 		menuBar = []*menu.Menu{&fileMenu, &displayMenu, &RatingsMenu}
@@ -69,12 +64,9 @@ func setMode(m mode) {
 			list = append(list, menu.MakeRadioItem(fmt.Sprintf("%v", k), &maxFrequon, k))
 		}
 		invadersMenu.Items = list
-		startBootSequence()
 	case modeGame:
 		menuBar = menuBar[:0]
-		startBootSequence()
 	}
-	currentMode = m
 	if (len(menuBar) != 0) != menuBarWasPresent {
 		// Menu bar appeared or disappeared, so repartition
 		partitionScreen(screenWidth, screenHeight)

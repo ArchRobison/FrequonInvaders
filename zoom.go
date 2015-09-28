@@ -20,8 +20,10 @@ func setZoom(dir float32) {
 	zoomRate = dir
 	if dir > 0 {
 		zoomAmount = 0
+		// Disable birthing of Frequons until zoom completes.
+		universe.SetNLiveMax(0)
 	} else {
-		zoomAmount = 1
+		// Use current zoomAmount
 	}
 }
 
@@ -29,6 +31,14 @@ func updateZoom(dt float32) {
 	z := zoomAmount + zoomRate*dt
 	if z > 1 {
 		z = 1
+		if zoomAmount < 1 {
+			// Have reached full zoom.  Enable birthing of Frequons.
+			if currentMode == modeGame {
+				universe.SetNLiveMax(1)
+			} else {
+				universe.SetNLiveMax(maxFrequon.Value)
+			}
+		}
 	} else if z < 0 {
 		z = 0
 	}

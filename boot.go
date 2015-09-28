@@ -19,7 +19,7 @@ func startBootSequence() {
    the original look of Frequon Invaders, it's done nonethless, with the
    teletype techno-babble.  It like the flutes on concrete columnes. */
 func advanceBootSequence(dt float32) {
-	if bootSequenceIndex < 0 {
+	if bootSequenceIndex < 0 || bootSequenceIndex >= 10 {
 		return
 	}
 	bootSequenceFrac += dt

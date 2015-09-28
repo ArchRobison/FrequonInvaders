@@ -176,11 +176,14 @@ func setDifficulty(n int) {
 	}
 }
 
-func BoxFractionAndScheme() (fracX, fracY float32, s coloring.SchemeBits) {
+func BoxFraction() (fracX, fracY float32) {
 	fracX = compressX
 	fracY = compressY
-	s = scheme
 	return
+}
+
+func Scheme() coloring.SchemeBits {
+	return scheme
 }
 
 func SetBoxFraction(frac float32) {

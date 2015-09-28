@@ -106,14 +106,12 @@ func updateLive(dt float32) {
 			// Healthy alien
 			if c.Progress >= 1 {
 				// Alien reached full power!
-				if isPractice {
-					// Remove alien
-					c.health = deathThreshold
-					continue
-				} else {
-					// Alien lands - you lose
+				if !isPractice {
 					gameState = GameLose
 				}
+				// Mark alien for culling
+				c.health = deathThreshold
+				continue
 			}
 			dx := c.Sx - x0
 			dy := c.Sy - y0
