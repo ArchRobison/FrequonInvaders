@@ -17,4 +17,5 @@ func TestGenerate(t *testing.T) {
 	for i := int('1'); i <= int('8'); i++ {
 		fmt.Printf("%s\n", Generate(rune(i)))
 	}
+	fmt.Printf("%s\n", GenerateWithNumber('H', 42))
 }
