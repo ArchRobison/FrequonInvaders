@@ -6,6 +6,7 @@ import (
 	"github.com/ArchRobison/FrequonInvaders/fall"
 	"github.com/ArchRobison/FrequonInvaders/fourier"
 	"github.com/ArchRobison/FrequonInvaders/menu"
+	"github.com/ArchRobison/FrequonInvaders/phrase"
 	"github.com/ArchRobison/FrequonInvaders/radar"
 	"github.com/ArchRobison/FrequonInvaders/score"
 	"github.com/ArchRobison/FrequonInvaders/teletype"
@@ -251,6 +252,22 @@ func setMode(m mode) {
 	}
 	currentMode = m
 	setMenus(m)
+}
+
+func endGame() {
+	teletype.Reset()
+	n := universe.NKill()
+	if n >= 64 {
+		teletype.Print(phrase.Generate(rune('W')) + "\n")
+	}
+	/*
+	       if false {
+	   		// FIXME - put actions here for beating low score on vanity board
+	   	} else {
+	   		teletype.Print(phrase.Generate(...))
+	       }
+	*/
+	setMode(modeVanity)
 }
 
 func main() {

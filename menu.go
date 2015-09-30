@@ -11,16 +11,38 @@ import (
 )
 
 var (
-	fileMenu     = menu.Menu{Label: "File"}
-	displayMenu  = menu.Menu{Label: "Display", Items: []menu.ItemInterface{autoGain}}
-	RatingsMenu  = menu.Menu{Label: "Ratings"}
+	fileMenu    = menu.Menu{Label: "File"}
+	displayMenu = menu.Menu{Label: "Display", Items: []menu.ItemInterface{autoGain}}
+	ratingsMenu = menu.Menu{Label: "Ratings", Items: []menu.ItemInterface{
+		highScores,
+		cpuSpeed,
+	},
+	}
 	invadersMenu = menu.Menu{Label: "Invaders"}
 	colorMenu    = menu.Menu{Label: "Color"}
 )
 
+// Items for "File" menu
+var (
+	beginGameItem, trainingItem *menu.SimpleItem
+
+	exitItem = menu.MakeSimpleItem("Exit", func() {
+		nimble.Quit()
+	})
+)
+
+// Items for "Display" menu
 var autoGain = menu.MakeCheckItem("Autogain", true, nil)
 
-var menuBar = []*menu.Menu{}
+// Items for "Ratings" menu
+var (
+	highScores = menu.MakeSimpleItem("High Scores", func() {
+		fmt.Printf("High Scores not yet implemented\n")
+	})
+	cpuSpeed = menu.MakeSimpleItem("CPU Speed", func() {
+		fmt.Printf("CPU Speed not yet implemented\n")
+	})
+)
 
 // State of stationary/moving radio buttons.
 var letFrequonsMove = menu.RadioState{OnSelect: func(value int) {
@@ -36,23 +58,22 @@ var maxFrequon = menu.RadioState{Value: 1, OnSelect: func(value int) {
 	universe.SetNLiveMax(value)
 }}
 
-var beginGameItem, trainingItem, exitItem *menu.SimpleItem
-
 var peek = menu.MakeCheckItem("peek", false, universe.SetShowAlways)
 
-// FIXME -split this routine into two routines, one for setting up the menus
-// and one for setting other state.
+var menuBar = []*menu.Menu{}
+
 func setMenus(m mode) {
 	menuBarWasPresent := len(menuBar) > 0
 	switch m {
 	case modeSplash, modeName, modeVanity:
-		menuBar = []*menu.Menu{&fileMenu, &displayMenu, &RatingsMenu}
+		menuBar = []*menu.Menu{&fileMenu, &displayMenu, &ratingsMenu}
 		fileMenu.Items = []menu.ItemInterface{
 			beginGameItem,
 			trainingItem,
 			exitItem,
 		}
 		exitItem.Flags |= menu.Separator
+
 	case modeTraining:
 		menuBar = []*menu.Menu{&fileMenu, &displayMenu, &invadersMenu, &colorMenu}
 		list := []menu.ItemInterface{
@@ -73,14 +94,13 @@ func setMenus(m mode) {
 	}
 }
 
+// Do initializations that would cause "initialization loop" if
+// embedded into the respective var declarations.
 func initMenuItem() {
 	beginGameItem = menu.MakeSimpleItem("Begin Game", func() {
 		setMode(modeGame)
 	})
 	trainingItem = menu.MakeSimpleItem("Training", func() {
 		setMode(modeTraining)
-	})
-	exitItem = menu.MakeSimpleItem("Exit", func() {
-		nimble.Quit()
 	})
 }
