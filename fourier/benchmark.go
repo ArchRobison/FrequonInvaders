@@ -11,6 +11,9 @@ import (
 // does only the accumulateToFeet and rotate steps, not the feetToPixels
 // step that does a few more sums and differences to compute the
 // actual Fourier transform.
+//
+// The current HFT kernel does only 16 floating-point operations (flops)
+// per foot, whereas the old one in "classic" did 24 flops.
 func runBenchmark(iterations int) (secs, flops float64) {
 	const m = 4
 	var (
