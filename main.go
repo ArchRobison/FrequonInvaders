@@ -20,6 +20,7 @@ const title = "Frequon Invaders 2.3"
 const edition = "(Go Edition)"
 
 const debugMode = true
+const benchmarkMode = false
 
 var winTitle string = title
 
@@ -167,13 +168,17 @@ func (context) Init(width, height int32) {
 	screenWidth, screenHeight = width, height
 	initCritterSprites(width, height)
 	initPastel()
-	setMode(modeSplash) // N.B. also causes partitionScreen to be called
 	teletype.Init("Characters.png")
-	teletype.Print(title + "\n")
-	teletype.Print(edition + "\n")
-	teletype.Print("By Arch D. Robison\n")
-	if debugMode {
-		teletype.Print("[debug mode]\n")
+	if benchmarkMode {
+		setMode(modeTraining)
+	} else {
+		setMode(modeSplash) // N.B. also causes partitionScreen to be called
+		teletype.Print(title + "\n")
+		teletype.Print(edition + "\n")
+		teletype.Print("By Arch D. Robison\n")
+		if debugMode {
+			teletype.Print("[debug mode]\n")
+		}
 	}
 }
 
@@ -212,7 +217,7 @@ func partitionScreen(width, height int32) {
 	radar.Init(radarPort.Size())
 	score.Init(scorePort.Size())
 	radar.SetColoring(coloring.AllBits)
-	// There is no fourer.Init routine since the zoom changes its display size
+	fourier.Init(fourierPort.Width(), universe.MaxCritter)
 	fourier.SetColoring(coloring.AllBits)
 }
 

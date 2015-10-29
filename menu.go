@@ -4,7 +4,9 @@ package main
 
 import (
 	"fmt"
+	"github.com/ArchRobison/FrequonInvaders/fourier"
 	"github.com/ArchRobison/FrequonInvaders/menu"
+	"github.com/ArchRobison/FrequonInvaders/teletype"
 	"github.com/ArchRobison/FrequonInvaders/universe"
 	"github.com/ArchRobison/Gophetica/math32"
 	"github.com/ArchRobison/Gophetica/nimble"
@@ -40,7 +42,8 @@ var (
 		fmt.Printf("High Scores not yet implemented\n")
 	})
 	cpuSpeed = menu.MakeSimpleItem("CPU Speed", func() {
-		fmt.Printf("CPU Speed not yet implemented\n")
+		teletype.Reset()
+		teletype.Print(fmt.Sprintf("HFT SPEED = %.1f GFlops\n", fourier.Benchmark()))
 	})
 )
 

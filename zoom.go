@@ -35,6 +35,8 @@ func updateZoom(dt float32) {
 			// Have reached full zoom.  Enable birthing of Frequons.
 			if currentMode == modeGame {
 				universe.SetNLiveMax(1)
+			} else if benchmarkMode {
+				universe.SetNLiveMax(8)
 			} else {
 				universe.SetNLiveMax(maxFrequon.Value)
 			}

@@ -23,7 +23,7 @@ func advanceBootSequence(dt float32) {
 		return
 	}
 	bootSequenceFrac += dt
-	if bootSequenceFrac < bootSequencePeriod {
+	if bootSequenceFrac < bootSequencePeriod && !benchmarkMode {
 		return
 	}
 	bootSequenceFrac = 0

@@ -2,6 +2,7 @@ package fourier
 
 import (
 	"fmt"
+	"github.com/ArchRobison/Gophetica/nimble"
 	"math/cmplx"
 	"testing"
 	"time"
@@ -10,6 +11,23 @@ import (
 const runBenchmark = true
 
 var test *testing.T
+
+func (z *cvec) put(i int, val complex128) {
+	z.re[i] = float32(real(val))
+	z.im[i] = float32(imag(val))
+}
+
+func (z *cvec) get(i int) complex128 {
+	return complex(float64(z.re[i]), float64(z.im[i]))
+}
+
+func put(z []cvec, i int, val complex128) {
+	z[i/4].put(i%4, val)
+}
+
+func get(z []cvec, i int) complex128 {
+	return z[i/4].get(i % 4)
+}
 
 func feetToSum(feet []foot, sum []cvec) {
 	for i := range feet {
@@ -94,23 +112,23 @@ func testRotate(which string, rot func([]cvec, []complex64)) {
 	}
 }
 
-func checkY(p pixel, z float32) {
+func checkY(p nimble.Pixel, z float32) {
 	if z < 0 || z >= clutSize {
 		panic("z too large")
 	}
 	y := p >> 16
-	if y != pixel(z) {
+	if y != nimble.Pixel(z) {
 		test.Errorf("Y error: y=%x z=%v\n", y, z)
 	}
 }
 
-func checkX(p pixel, z float32) {
+func checkX(p nimble.Pixel, z float32) {
 	if z < 0 || z >= clutSize {
 		panic("z too large")
 	}
 	x := p & 0xFFFF
-	if x != pixel(z) {
-		test.Errorf("X error: p=%x z=%v\n", x, z)
+	if x != nimble.Pixel(z) {
+		test.Errorf("X error: x=%x z=%v\n", x, z)
 	}
 }
 
@@ -120,7 +138,7 @@ func checkEqual(actual float32, expected float32) {
 	}
 }
 
-func testFeetToPixels(which string, toPixels func([]foot, *[128][128]pixel, []pixel)) {
+func testFeetToPixels(which string, toPixels func([]foot, *[128][128]nimble.Pixel, []nimble.Pixel)) {
 	n := 1920 / 12 // Number of feet
 
 	// Initialize feet
@@ -138,15 +156,15 @@ func testFeetToPixels(which string, toPixels func([]foot, *[128][128]pixel, []pi
 	}
 
 	// Initialize lookup table
-	clut := [128][128]pixel{}
+	clut := [128][128]nimble.Pixel{}
 	for i := 0; i < 128; i++ {
 		for j := 0; j < 128; j++ {
-			clut[i][j] = pixel(i<<16 | j)
+			clut[i][j] = nimble.Pixel(i<<16 | j)
 		}
 	}
 
 	// Must have 12 pixels per foot
-	row := make([]pixel, 12*n)
+	row := make([]nimble.Pixel, 12*n)
 
 	origFeet := make([]foot, len(feet))
 	copy(origFeet, feet)
@@ -157,7 +175,7 @@ func testFeetToPixels(which string, toPixels func([]foot, *[128][128]pixel, []pi
 		f := &origFeet[i]
 		g := &feet[i]
 		for k := 0; k < 4; k++ {
-			var p pixel
+			var p nimble.Pixel
 			p = row[12*i+0+k]
 			checkX(p, f.ac[k]+f.bd[k])
 			checkY(p, f.bc[k]-f.ad[k])
@@ -167,7 +185,7 @@ func testFeetToPixels(which string, toPixels func([]foot, *[128][128]pixel, []pi
 			p = row[12*i+8+k]
 			checkX(p, f.ac[k]-f.bd[k])
 			checkY(p, f.bc[k]+f.ad[k])
-			checkEqual(g.a[k], 64.5) 
+			checkEqual(g.a[k], 64.5)
 			checkEqual(g.b[k], 64.5)
 			checkEqual(g.ac[k], 64.5)
 			checkEqual(g.bc[k], 64.5)
@@ -187,19 +205,19 @@ func testFeetToPixels(which string, toPixels func([]foot, *[128][128]pixel, []pi
 }
 
 func TestRotate(c *testing.T) {
-    test = c
+	test = c
 	testRotate("slow", rotateSlow)
 	testRotate("fast", rotate)
 }
 
 func TestAccumulateToFeet(c *testing.T) {
-    test = c
+	test = c
 	testAccumulateToFeet("slow", accumulateToFeetSlow)
 	testAccumulateToFeet("fast", accumulateToFeet)
 }
 
 func TestFeetToPixels(c *testing.T) {
-    test = c
+	test = c
 	testFeetToPixels("slow", feetToPixelSlow)
 	testFeetToPixels("fast", feetToPixel)
 }
