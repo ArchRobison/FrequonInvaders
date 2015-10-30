@@ -1,3 +1,5 @@
+// Declarations for HFT
+
 package fourier
 
 import (
@@ -17,17 +19,27 @@ type cvec struct {
 
 // "foot" struct of vectors that holds sums for computing
 // a + bi, (a+bi)*(c+di), and (a+bi)*(c-di)
+//
+// It's called foot because the computation pattern resembles
+// a thee-toed foot:
+//
+//		      *u3
+//        z---------> (next foot)
+//	     / \
+//      / | \
+//	  zu* z  zu
+//
 type foot struct {
-	a, b, ac, bc, ad, bd [vlen]float32
+	a, b, ac, bc, ad, bd vec
 }
 
-// Structure with w and w cubed.
-type w13 struct {
-	w1, w3 complex64
+// Structure with u and u cubed.
+type u13 struct {
+	u1, u3 complex64
 }
 
-func accumulateToFeet(z *[2]cvec, u *[2]w13, feet []foot)
+func accumulateToFeet(z *[2]cvec, u *[2]u13, feet []foot)
 
 func feetToPixel(feet []foot, clut *[128][128]nimble.Pixel, row []nimble.Pixel)
 
-func rotate([]cvec, []complex64)
+func rotate(w []cvec, v []complex64)

@@ -17,7 +17,7 @@ import (
 func runBenchmark(iterations int) (secs, flops float64) {
 	const m = 4
 	var (
-		u [m]w13
+		u [m]u13
 		v [m]complex64
 		w [m]cvec
 	)
@@ -28,8 +28,8 @@ func runBenchmark(iterations int) (secs, flops float64) {
 			w[i].re[k] = real(c)
 			w[i].im[k] = imag(c)
 		}
-		u[i].w1 = cmplx64.Rect(1, 4*ω)
-		u[i].w3 = cmplx64.Rect(1, 12*ω)
+		u[i].u1 = cmplx64.Rect(1, 4*ω)
+		u[i].u3 = cmplx64.Rect(1, 12*ω)
 		v[i] = cmplx64.Rect(1, ω)
 	}
 	const p = 140
@@ -43,13 +43,16 @@ func runBenchmark(iterations int) (secs, flops float64) {
 		for i := 0; i < m; i += 2 {
 			accumulateToFeet(
 				(*[2]cvec)(unsafe.Pointer(&w[i])),
-				(*[2]w13)(unsafe.Pointer(&u[i])), feet)
-			rotate(w[:], v[:])
+				(*[2]u13)(unsafe.Pointer(&u[i])), feet)
 		}
+		rotate(w[:], v[:])
 	}
 	t1 := time.Now()
 	secs = t1.Sub(t0).Seconds()
-	flops = float64(16 * 4 * p * m * iterations)
+	// The 16*4*p is the floating-point operations for accumulateToFeet
+	// The +8 is for "rotate"
+
+	flops = float64((16*4*p + 8) * m * iterations)
 	return
 }
 

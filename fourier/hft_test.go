@@ -1,3 +1,5 @@
+// Test for kernels
+
 package fourier
 
 import (
@@ -8,7 +10,7 @@ import (
 	"time"
 )
 
-const runBenchmark = true
+const runTiming = true
 
 var test *testing.T
 
@@ -29,33 +31,34 @@ func get(z []cvec, i int) complex128 {
 	return z[i/4].get(i % 4)
 }
 
-func feetToSum(feet []foot, sum []cvec) {
-	for i := range feet {
-		f := &feet[i]
-		for k := 0; k < vlen; k++ {
-			sum[3*i+0].re[k] = f.ac[k] + f.bd[k]
-			sum[3*i+0].im[k] = f.bc[k] - f.ad[k]
-			sum[3*i+1].re[k] = f.a[k]
-			sum[3*i+1].im[k] = f.b[k]
-			sum[3*i+2].re[k] = f.ac[k] - f.bd[k]
-			sum[3*i+2].im[k] = f.bc[k] + f.ad[k]
-		}
+func toe(feet []foot, i int) complex64 {
+	f := &feet[i/12]
+	k := i % 4
+	switch i / 4 % 3 {
+	case 0:
+		return complex(f.ac[k]+f.bd[k], f.bc[k]-f.ad[k])
+	case 1:
+		return complex(f.a[k], f.b[k])
+	case 2:
+		return complex(f.ac[k]-f.bd[k], f.bc[k]+f.ad[k])
 	}
+	panic("negative i?")
+
 }
 
-func testAccumulateToFeet(which string, walk func(*[2]cvec, *[2]w13, []foot)) {
+func testAccumulateToFeet(which string, walk func(*[2]cvec, *[2]u13, []foot)) {
 	φ := []float64{0.2, 0.3}
 	r := []float64{1.25, 0.75}
 	// fmt.Printf("ω %v %v\n", cmplx.Abs(ω), cmplx.Phase(ω))
 	var a [2]cvec
-	var u [2]w13
+	var u [2]u13
 	for i := 0; i < 2; i++ {
 		for k := 0; k < 4; k++ {
 			a[i].put(k, cmplx.Rect(r[i], φ[i]*float64(k)))
 		}
 		ω := cmplx.Rect(1, φ[i]*4)
-		u[i].w1 = complex64(ω)
-		u[i].w3 = complex64(ω * ω * ω)
+		u[i].u1 = complex64(ω)
+		u[i].u3 = complex64(ω * ω * ω)
 	}
 
 	// n = number of chickenfeet
@@ -63,28 +66,22 @@ func testAccumulateToFeet(which string, walk func(*[2]cvec, *[2]w13, []foot)) {
 	var f [n]foot
 	walk(&a, &u, f[:])
 
-	var sum [n * 3]cvec
-	for k := 0; k < 12*n; k++ {
-		put(sum[:], k, 0)
-	}
-	feetToSum(f[:], sum[:])
-
 	for k := 0; k < 12*n; k++ {
 		expected := cmplx.Rect(r[0], φ[0]*float64(k-4)) + cmplx.Rect(r[1], φ[1]*float64(k-4))
-		actual := get(sum[:], k)
+		actual := complex128(toe(f[:], k))
 		dist := cmplx.Abs(actual - expected)
 		if dist > 1.1E-5 {
 			test.Errorf("[%v] actual=%v expected=%v err=%v\n", k, actual, expected, dist)
 		}
 	}
-	if runBenchmark {
+	if runTiming {
 		t0 := time.Now()
 		trials := 100000
 		for i := 0; i < trials; i++ {
 			walk(&a, &u, f[:])
 		}
 		t1 := time.Now()
-		fmt.Printf("%v: %v Gflop/sec\n", which, float64(n*4*16*2*trials)/1E9/t1.Sub(t0).Seconds())
+		fmt.Printf("%v: %.2f Gflop/sec\n", which, float64(n*4*16*2*trials)/1E9/t1.Sub(t0).Seconds())
 	}
 }
 
@@ -193,14 +190,14 @@ func testFeetToPixels(which string, toPixels func([]foot, *[128][128]nimble.Pixe
 			checkEqual(g.bd[k], 0)
 		}
 	}
-	if runBenchmark {
+	if runTiming {
 		t0 := time.Now()
 		trials := 100000
 		for i := 0; i < trials; i++ {
 			toPixels(feet, &clut, row)
 		}
 		t1 := time.Now()
-		fmt.Printf("%v: %v Gpixel/sec\n", which, float64(12*n*trials)/1E9/t1.Sub(t0).Seconds())
+		fmt.Printf("%v: %.2f Gpixel/sec\n", which, float64(12*n*trials)/1E9/t1.Sub(t0).Seconds())
 	}
 }
 
