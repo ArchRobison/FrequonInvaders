@@ -30,6 +30,7 @@ var flag bool
 
 func (*context) Render(pm nimble.PixMap) {
 	if !flag {
+		Print("(0123456789),$/\n")
 		Print("Type some text and 'enter'.\n")
 		Print("Try backspace and del.\n" +
 			"Press Esc to quit.")

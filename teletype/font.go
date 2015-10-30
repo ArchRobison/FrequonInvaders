@@ -20,8 +20,8 @@ func loadFont(filename string) []charMask {
 			word := charRow(0)
 			for j := 0; j < charWidth; j++ {
 				x := c&0xF*24 + j
-				y := c>>4*42 + i
-				if pm.Pixel(int32(x), int32(y))&0xFF00 < 0x8000 {
+				y := c>>4*42 + i - 4
+				if y >= 0 && pm.Pixel(int32(x), int32(y))&0xFF00 < 0x8000 {
 					word |= 1 << uint(j)
 				}
 			}
