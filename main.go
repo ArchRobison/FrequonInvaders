@@ -253,6 +253,7 @@ func setMode(m mode) {
 	switch m {
 	case modeSplash, modeName, modeVanity:
 	case modeTraining, modeGame:
+		universe.BeginGame(m == modeTraining)
 		startBootSequence()
 	}
 	currentMode = m
