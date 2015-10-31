@@ -176,14 +176,15 @@ func setDifficulty(n int) {
 	}
 }
 
+// Return coloring scheme to be used for radar and fourier view
+func Scheme() coloring.SchemeBits {
+	return scheme
+}
+
 func BoxFraction() (fracX, fracY float32) {
 	fracX = compressX
 	fracY = compressY
 	return
-}
-
-func Scheme() coloring.SchemeBits {
-	return scheme
 }
 
 func SetBoxFraction(frac float32) {
