@@ -74,11 +74,9 @@ var (
 
 func bounce(sref, vref *float32, limit, dt float32) {
 	s, v := *sref, *vref
-/*
 	if s < 0 || s > limit {
-		panic(fmt.Sprintf("s=%v v=%v limit=%v dt=%v\n", s, v, limit, dt))
+		panic(fmt.Sprintf("universe.bounce: s=%v v=%v limit=%v dt=%v\n", s, v, limit, dt))
 	}
-*/
 	s += v * dt
 	for {
 		if s < 0 {
@@ -142,8 +140,7 @@ func updateLive(dt float32) {
 				// Alien croaked.  Mark as dead
 				c.health = deathThreshold
 				if !isPractice {
-					nKill++
-					setDifficulty(nKill)
+					TallyKill()
 				}
 			}
 		}
@@ -216,11 +213,7 @@ func tryBirth(dt float32) {
 	if nLiveMax > len(zooStorage)-1 {
 		panic(fmt.Sprintf("birth: nLiveMax=%v > len(zooStorage)-1=%v\n", nLiveMax, len(zooStorage)-1))
 	}
-	nLive := j - 1
-	if nLive > nLiveMax {
-		panic(fmt.Sprintf("birth: nLive=%v > nLiveMax=%v\n", nLive, nLiveMax))
-	}
-	if nLive >= nLiveMax {
+	if nLive := j - 1; nLive >= nLiveMax {
 		// Already reached population limit
 		return
 	}

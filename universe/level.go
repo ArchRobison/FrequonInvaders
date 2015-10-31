@@ -194,8 +194,16 @@ func SetBoxFraction(frac float32) {
 	compressY = frac
 }
 
+// NKill returns the number of aliens killed so far.
 func NKill() int {
 	return nKill
+}
+
+// TallyKill increments the count of kills and sets the difficulty accordingly.
+// Public because its directly called in debugging mode.
+func TallyKill() {
+	nKill++
+	setDifficulty(nKill)
 }
 
 func BeginGame(isPractice_ bool) {
