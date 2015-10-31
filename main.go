@@ -60,6 +60,18 @@ func (context) KeyDown(k nimble.Key) {
 			nimble.Quit()
 		}
 	}
+	if debugMode {
+		// Shortcuts for debuggin
+		switch k {
+		case 'b':
+			bootSequencePeriod = 0
+			setMode(modeGame)
+		case 'e':
+			youLose()
+		case 's':
+			universe.TallyKill()
+		}
+	}
 }
 
 var mouseX, mouseY int32
@@ -170,6 +182,7 @@ func (context) Init(width, height int32) {
 	initPastel()
 	teletype.Init("Characters.png")
 	if benchmarkMode {
+		bootSequencePeriod = 0
 		setMode(modeTraining)
 	} else {
 		setMode(modeSplash) // N.B. also causes partitionScreen to be called

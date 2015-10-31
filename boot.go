@@ -6,6 +6,12 @@ import (
 	"github.com/ArchRobison/FrequonInvaders/teletype"
 )
 
+var (
+	bootSequenceIndex  = -1         // Index of next boot operation; or -1 if done booting.
+	bootSequenceFrac   float32      // Boot time accumulated since last step
+	bootSequencePeriod float32 = .5 // Seconds between boot steps
+)
+
 func startBootSequence() {
 	bootSequenceIndex = 0
 	bootSequenceFrac = 0
@@ -23,7 +29,7 @@ func advanceBootSequence(dt float32) {
 		return
 	}
 	bootSequenceFrac += dt
-	if bootSequenceFrac < bootSequencePeriod && !benchmarkMode {
+	if bootSequenceFrac < bootSequencePeriod {
 		return
 	}
 	bootSequenceFrac = 0
@@ -55,10 +61,3 @@ func advanceBootSequence(dt float32) {
 		teletype.Reset()
 	}
 }
-
-/* If negative, then done booting.
-   Otherwise index of next boot operation. */
-var bootSequenceIndex = -1
-var bootSequenceFrac float32
-
-const bootSequencePeriod = .5 // In seconds
