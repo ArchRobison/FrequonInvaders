@@ -1,6 +1,8 @@
 // Functions for displaying the color lookup table.
 // These are not for production use, but sometimes useful for debugging.
 
+// +build !release
+
 package fourier
 
 import "github.com/ArchRobison/Gophetica/nimble"
