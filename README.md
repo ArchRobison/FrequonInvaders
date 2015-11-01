@@ -1,5 +1,6 @@
 # FrequonInvaders
-This is a work in progress to port Frequon Invaders from C++ to Go Language
+This is a work in progress to port [Frequon Invaders](http://www.blonzonics.us/games/frequon-invaders)
+from C++ to the Go Language
 
 ## Prerequisites
 * [Go](https://golang.org/doc/install)
@@ -23,9 +24,8 @@ src/github.com/veandco/go-sdl2
 3. cd to `src/github.com/ArchRobison/FrequonInvaders`
 4. Run `go build`
 
-## Status (2015-Sept-27)
+## Status (2015-Oct-31)
 
-Part of the code is dummied.  There is some sound.  The score lights work.
-Boot sequence mostly works, with zoom effect for Fourier view.
-In training mode, the Invaders menu works.
-You can interfere and destroy Frequons and raise the score.
+Works on Windows 8.  Not tested on other platforms.  
+
+Please post issues for features that you think are missing from the classic version. 
