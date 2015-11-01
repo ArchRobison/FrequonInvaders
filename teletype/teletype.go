@@ -59,14 +59,26 @@ func PrintChar(c rune) {
 		teletypeDisplay = append(teletypeDisplay, []byte{})
 	} else {
 		r := lastLine()
-		*r = append(*r, byte(unicode.ToUpper(c)))
+		*r = append(*r, byte(c))
 	}
+}
+
+// Print one character, forcing it to upper case if it's lower case.
+func PrintCharUpper(c rune) {
+	PrintChar(unicode.ToUpper(c))
 }
 
 // Print a string on the teletype
 func Print(text string) {
 	for _, c := range text {
 		PrintChar(c)
+	}
+}
+
+// PrintUpper prints a string on the teletype in upper case.
+func PrintUpper(text string) {
+	for _, c := range text {
+		PrintCharUpper(c)
 	}
 }
 
