@@ -5,6 +5,8 @@ const (
 	vanityNameLenMax = 20
 )
 
+// Record has the score and name for a game.
+// Slices of these records are kept in order of descending score.
 type Record struct {
 	Score uint8
 	Name  string

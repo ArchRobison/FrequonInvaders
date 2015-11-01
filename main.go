@@ -11,6 +11,7 @@ import (
 	"github.com/ArchRobison/FrequonInvaders/score"
 	"github.com/ArchRobison/FrequonInvaders/teletype"
 	"github.com/ArchRobison/FrequonInvaders/universe"
+	"github.com/ArchRobison/FrequonInvaders/vanity"
 	"github.com/ArchRobison/Gophetica/nimble"
 	"math/rand"
 	"time"
@@ -53,15 +54,35 @@ func (context) KeyDown(k nimble.Key) {
 			nimble.Quit()
 		}
 	}
+	if currentMode == modeName {
+		if 0x20 <= k && k < 0x7F {
+			teletype.PrintCharUpper(rune(k))
+		} else {
+			switch k {
+			case nimble.KeyReturn:
+				acceptScore(uint8(universe.NKill()), teletype.CursorLine())
+			case nimble.KeyBackspace, nimble.KeyDelete:
+				teletype.Backup()
+			}
+		}
+	}
+
 	if debugMode {
-		// Shortcuts for debuggin
+		// Shortcuts for debugging
 		switch k {
 		case 'b':
+			// Begin game
 			bootSequencePeriod = 0
 			setMode(modeGame)
 		case 'e':
+			// End game
 			youLose()
+		case 'r':
+			// Reset score file
+			records = make([]vanity.Record, 0)
+			vanity.WriteToFile(records)
 		case 's':
+			// Score a point
 			universe.TallyKill()
 		}
 	}
@@ -184,9 +205,6 @@ func (context) Init(width, height int32) {
 		setMode(modeTraining)
 	} else {
 		setMode(modeSplash) // N.B. also causes partitionScreen to be called
-		teletype.Print(title + "\n")
-		teletype.Print(edition + "\n")
-		teletype.Print("By Arch D. Robison\n")
 		if debugMode {
 			teletype.Print("[debug mode]\n")
 		}
@@ -251,6 +269,17 @@ const (
 	modeVanity
 )
 
+var records []vanity.Record
+
+func acceptScore(score uint8, name string) {
+	records = vanity.Insert(records, score, name)
+	err := vanity.WriteToFile(records)
+	setMode(modeVanity)
+	if err != nil {
+		teletype.Print(err.Error())
+	}
+}
+
 func setMode(m mode) {
 	fourierIsVisible = false
 	fallIsVisible = false
@@ -258,12 +287,32 @@ func setMode(m mode) {
 	scoreIsVisible = false
 	dividerCount = 0
 	switch m {
-	case modeSplash, modeName, modeVanity:
+	case modeSplash:
+		teletype.PrintUpper(title + "\n")
+		teletype.PrintUpper(edition + "\n")
+		teletype.PrintUpper("By Arch D. Robison\n")
+		var err error
+		records, err = vanity.ReadFromFile()
+		if err != nil {
+			teletype.Print(err.Error())
+		}
+	case modeName:
+		teletype.Reset()
+		teletype.PrintUpper(phrase.GenerateWithNumber(rune('H'), universe.NKill()) + "\n")
+		teletype.PrintUpper("Please enter your name:\n")
+		teletype.DisplayCursor(true)
 	case modeTraining, modeGame:
 		universe.BeginGame(m == modeTraining)
 		// Temporarily set NLiveMax to 0.  End of boot sequence will set it to 1.
 		universe.SetNLiveMax(0)
 		startBootSequence()
+	case modeVanity:
+		teletype.Reset()
+		teletype.DisplayCursor(false)
+		teletype.PrintUpper("Supreme Freqs\n\nScore Player\n")
+		for _, r := range records {
+			teletype.PrintUpper(fmt.Sprintf("%5d %s\n", r.Score, r.Name))
+		}
 	}
 	currentMode = m
 	setMenus(m)
@@ -273,16 +322,13 @@ func endGame() {
 	teletype.Reset()
 	n := universe.NKill()
 	if n >= 64 {
-		teletype.Print(phrase.Generate(rune('W')) + "\n")
+		teletype.PrintUpper(phrase.Generate(rune('W')) + "\n")
 	}
-	/*
-	       if false {
-	   		// FIXME - put actions here for beating low score on vanity board
-	   	} else {
-	   		teletype.Print(phrase.Generate(...))
-	       }
-	*/
-	setMode(modeVanity)
+	if vanity.IsWorthyScore(records, uint8(n)) {
+		setMode(modeName)
+	} else {
+		setMode(modeVanity)
+	}
 }
 
 func main() {

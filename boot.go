@@ -36,7 +36,7 @@ func advanceBootSequence(dt float32) {
 	n := bootSequenceIndex
 	bootSequenceIndex = n + 1
 	if 1 <= n && n <= 8 {
-		teletype.Print(phrase.Generate(rune('0' + n)))
+		teletype.PrintUpper(phrase.Generate(rune('0' + n)))
 		teletype.PrintChar('\n')
 	}
 	if 0 < n && n <= 8 {

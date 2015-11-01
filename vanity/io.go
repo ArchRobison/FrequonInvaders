@@ -8,7 +8,8 @@ import (
 	"os"
 )
 
-func vanityBoardPath() string {
+// vanityFilePath returns the path to the vanity board file.
+func vanityFilePath() string {
 	return "vanity.dat" // FIXME
 }
 
@@ -28,16 +29,17 @@ func hash(v []Record, salt []byte) [sha1.Size]byte {
 
 const saltLen = 5
 
-func WriteToFile(v []Record) {
+// WriteToFile writes names/scores to the score file.
+func WriteToFile(v []Record) (err error) {
 	var sig [saltLen + sha1.Size]byte
-	_, err := rand.Reader.Read(sig[:saltLen])
+	_, err = rand.Reader.Read(sig[:saltLen])
 	if err != nil {
 		panic(err)
 	}
 	h := hash(v, sig[:saltLen])
 	copy(sig[saltLen:], h[:])
 
-	path := vanityBoardPath()
+	path := vanityFilePath()
 	file, err := os.Create(path)
 	if err == nil {
 		defer file.Close()
@@ -52,10 +54,12 @@ func WriteToFile(v []Record) {
 			f.WriteByte(0)
 		}
 	}
+	return
 }
 
+// ReadFromFile reads names/scores from the score file.
 func ReadFromFile() (v []Record, err error) {
-	path := vanityBoardPath()
+	path := vanityFilePath()
 	file, err := os.Open(path)
 	// Read records
 	v = []Record{}

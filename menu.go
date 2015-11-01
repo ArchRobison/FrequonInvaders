@@ -13,13 +13,9 @@ import (
 )
 
 var (
-	fileMenu    = menu.Menu{Label: "File"}
-	displayMenu = menu.Menu{Label: "Display", Items: []menu.ItemInterface{autoGain}}
-	ratingsMenu = menu.Menu{Label: "Ratings", Items: []menu.ItemInterface{
-		highScores,
-		cpuSpeed,
-	},
-	}
+	fileMenu     = menu.Menu{Label: "File"}
+	displayMenu  = menu.Menu{Label: "Display", Items: []menu.ItemInterface{autoGain}}
+	ratingsMenu  = menu.Menu{Label: "Ratings"}
 	invadersMenu = menu.Menu{Label: "Invaders"}
 	colorMenu    = menu.Menu{Label: "Color"}
 )
@@ -38,10 +34,8 @@ var autoGain = menu.MakeCheckItem("Autogain", true, nil)
 
 // Items for "Ratings" menu
 var (
-	highScores = menu.MakeSimpleItem("High Scores", func() {
-		fmt.Printf("High Scores not yet implemented\n")
-	})
-	cpuSpeed = menu.MakeSimpleItem("CPU Speed", func() {
+	highScores *menu.SimpleItem
+	cpuSpeed   = menu.MakeSimpleItem("CPU Speed", func() {
 		teletype.Reset()
 		teletype.Print(fmt.Sprintf("HFT SPEED = %.1f GFlops\n", fourier.Benchmark()))
 	})
@@ -76,7 +70,10 @@ func setMenus(m mode) {
 			exitItem,
 		}
 		exitItem.Flags |= menu.Separator
-
+		ratingsMenu.Items = []menu.ItemInterface{
+			highScores,
+			cpuSpeed,
+		}
 	case modeTraining:
 		menuBar = []*menu.Menu{&fileMenu, &displayMenu, &invadersMenu, &colorMenu}
 		list := []menu.ItemInterface{
@@ -105,5 +102,8 @@ func initMenuItem() {
 	})
 	trainingItem = menu.MakeSimpleItem("Training", func() {
 		setMode(modeTraining)
+	})
+	highScores = menu.MakeSimpleItem("High Scores", func() {
+		setMode(modeVanity)
 	})
 }
