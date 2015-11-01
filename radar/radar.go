@@ -83,7 +83,6 @@ func getFrame(k int32) []nimble.Pixel {
 		width, height := xSize, ySize
 		// Construct the frame, incorporating "sweep"
 		θ := float32(k)/nFrame*(2*π) - π
-		pm := nimble.MakePixMap(width, height, f, width)
 		for i := int32(0); i < height; i++ {
 			for j := int32(0); j < width; j++ {
 				var color nimble.Pixel
@@ -99,7 +98,7 @@ func getFrame(k int32) []nimble.Pixel {
 				} else {
 					color = nimble.Black
 				}
-				pm.SetPixel(j, i, color)
+				f[i*width+j] = color
 			}
 		}
 		frameValid[k] = true
