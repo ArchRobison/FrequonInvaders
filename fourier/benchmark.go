@@ -32,7 +32,7 @@ func runBenchmark(iterations int) (secs, flops float64) {
 		u[i].u3 = cmplx64.Rect(1, 12*ω)
 		v[i] = cmplx64.Rect(1, ω)
 	}
-	// 140 = number for feet used for game when played in full HDTV resolution 
+	// 140 = number for feet used for game when played in full HDTV resolution
 	const p = 140
 	feet := make([]foot, p)
 	var t0 time.Time

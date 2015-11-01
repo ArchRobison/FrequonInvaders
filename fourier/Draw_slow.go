@@ -1,8 +1,13 @@
 // Generic version of Draw for platforms without assembly-language kernels
 //
-// +build !amd64
+// +build !amd64 slow
 
 package fourier
+
+import (
+	"github.com/ArchRobison/Gophetica/cmplx64"
+	"github.com/ArchRobison/Gophetica/nimble"
+)
 
 func Init(widthMax int32, harmonicLenMax int) {
 	// Noop

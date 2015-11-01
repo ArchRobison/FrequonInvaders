@@ -1,4 +1,4 @@
-// Generic version of HFT routines.
+// Generic version of HFT kernels.
 //
 // These are not for production use, but instead serve as references for what
 // the assembly language kernels (e.g. hft_amd64.s) should do.

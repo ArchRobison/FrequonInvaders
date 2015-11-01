@@ -1,6 +1,6 @@
 // Version of Draw that relies on fast assembly-coded kernels.
 //
-// +build amd64
+// +build amd64,!slow
 
 package fourier
 

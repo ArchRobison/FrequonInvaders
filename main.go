@@ -347,7 +347,7 @@ func main() {
 			defer fun()
 		}
 		if benchmarking {
-			winSpec = &windowSpec{1024, 768, "benchmark"}
+			winSpec = &windowSpec{1920, 1080, "benchmark"}
 		} else {
 			winSpec = &windowSpec{1024, 768, "debug"}
 		}
