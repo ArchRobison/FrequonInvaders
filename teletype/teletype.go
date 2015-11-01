@@ -31,6 +31,7 @@ var (
 	displayCursor   bool
 )
 
+// Draw the teletype contents on the given PixMap.
 func Draw(pm nimble.PixMap) {
 	var r *[]byte = nil
 	if displayCursor && math.Mod(nimble.Now(), 1) >= 0.5 {
@@ -45,13 +46,15 @@ func Draw(pm nimble.PixMap) {
 	}
 }
 
-// Reset the teletype state
+// Reset the teletype state.
 func Reset() {
 	teletypeDisplay = [][]byte{{}}
 }
 
 // Print one character on the teletype.
+// A '\n' goes to the next line.
 func PrintChar(c rune) {
+
 	if c == '\n' {
 		teletypeDisplay = append(teletypeDisplay, []byte{})
 	} else {
