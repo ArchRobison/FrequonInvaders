@@ -1,5 +1,5 @@
 // Functions for displaying the color lookup table.
-// These are for production use, but sometimes useful for debugging.
+// These are not for production use, but sometimes useful for debugging.
 
 package fourier
 
