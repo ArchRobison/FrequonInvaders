@@ -22,9 +22,12 @@ src/github.com/ArchRobison/Gophetica
 src/github.com/veandco/go-sdl2
 ```
 3. cd to `src/github.com/ArchRobison/FrequonInvaders`
-4. Run `go build`
+4. Run `go build -tags=release`
 
-## Status (2015-Oct-31)
+Use just `go build` to build a developer version, which has keyboard
+shortcuts for testing and profiling support.
+
+## Status (2015-Nov-1)
 
 Works on Windows 8.  Not tested on other platforms.  
 
