@@ -20,8 +20,6 @@ import (
 const title = "Frequon Invaders 2.3"
 const edition = "(Go Edition)"
 
-const debugMode = true
-
 type context struct {
 }
 
@@ -67,7 +65,7 @@ func (context) KeyDown(k nimble.Key) {
 		}
 	}
 
-	if debugMode {
+	if devConfig {
 		// Shortcuts for debugging
 		switch k {
 		case 'b':
@@ -137,9 +135,7 @@ func (context) Render(pm nimble.PixMap) {
 		// Fourier view
 		drawFrequonsFourier(pm.Intersect(fourierPort))
 		drawFrequonsSpatial(pm.Intersect(fourierPort), xf, yf)
-		if debugMode {
-			tallyFourierFrame()
-		}
+		tallyFourierFrame()
 	} else {
 		// Teletype view
 		teletype.Draw(pm.Intersect(fourierPort))
@@ -200,12 +196,12 @@ func (context) Init(width, height int32) {
 	initCritterSprites(width, height)
 	initPastel()
 	teletype.Init("Characters.png")
-	if debugMode && benchmarkMode {
+	if benchmarking {
 		bootSequencePeriod = 0
 		setMode(modeTraining)
 	} else {
 		setMode(modeSplash) // N.B. also causes partitionScreen to be called
-		if debugMode {
+		if devConfig {
 			teletype.Print("[debug mode]\n")
 		}
 	}
@@ -331,20 +327,35 @@ func endGame() {
 	}
 }
 
+type windowSpec struct {
+	width, height int32
+	title         string
+}
+
+func (w *windowSpec) Size() (width, height int32) {
+	return w.width, w.height
+}
+
+func (w *windowSpec) Title() string {
+	return w.title
+}
+
 func main() {
-	if debugMode {
+	var winSpec nimble.WindowSpec = nil
+	if devConfig {
 		for _, fun := range profileStart() {
 			defer fun()
 		}
-		if benchmarkMode {
-			nimble.SetWindowSize(1920, 1080)
+		if benchmarking {
+			winSpec = &windowSpec{1024, 768, "benchmark"}
+		} else {
+			winSpec = &windowSpec{1024, 768, "debug"}
 		}
 	}
-	nimble.SetWindowTitle(title + " " + edition)
 	initMenuItem()
 	rand.Seed(time.Now().UnixNano())
 	nimble.AddRenderClient(context{})
 	nimble.AddMouseObserver(context{})
 	nimble.AddKeyObserver(context{})
-	nimble.Run()
+	nimble.Run(winSpec)
 }

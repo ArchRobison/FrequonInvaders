@@ -19,7 +19,7 @@ const (
 // Set zoom rate.  Argument should be zoomGrow or zoomShrink for normal speed.
 func setZoom(dir float32) {
 	zoomRate = dir
-	if debugMode && benchmarkMode {
+	if benchmarking {
 		// Accelerate zoom
 		zoomRate *= 20
 	}
@@ -40,7 +40,7 @@ func updateZoom(dt float32) {
 			// Have reached full zoom.  Enable birthing of Frequons.
 			if currentMode == modeGame {
 				universe.SetNLiveMax(1)
-			} else if debugMode && benchmarkMode {
+			} else if benchmarking {
 				universe.SetNLiveMax(8)
 			} else {
 				universe.SetNLiveMax(maxFrequon.Value)

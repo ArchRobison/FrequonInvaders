@@ -1,4 +1,4 @@
-// Routines related to profiling
+// +build !release
 
 package main
 
@@ -9,19 +9,21 @@ import (
 	"runtime/pprof"
 )
 
-var benchmarkMode = false
+const devConfig = true
+
+var benchmarking = false
 
 var fourierFrameCount = 0 // Number of fourier frames rendered
 
 func tallyFourierFrame() {
-	if debugMode && benchmarkMode {
+	if benchmarking {
 		if fourierFrameCount++; fourierFrameCount >= 1000 {
 			nimble.Quit()
 		}
 	}
 }
 
-// profileStart starts any profilig requested on the command line.
+// profileStart starts any profiling requested on the command line.
 // It returns a slice of functions to be executed when main exits.
 func profileStart() []func() {
 	fun := make([]func(), 0, 2)
@@ -35,7 +37,7 @@ func profileStart() []func() {
 		}
 		pprof.StartCPUProfile(f)
 		fun = append(fun, pprof.StopCPUProfile)
-		benchmarkMode = true
+		benchmarking = true
 	}
 	if *memProfile != "" {
 		heapProfileFile, err := os.Create(*memProfile)
@@ -46,7 +48,7 @@ func profileStart() []func() {
 			pprof.WriteHeapProfile(heapProfileFile)
 			heapProfileFile.Close()
 		})
-		benchmarkMode = true
+		benchmarking = true
 	}
 	return fun
 }
