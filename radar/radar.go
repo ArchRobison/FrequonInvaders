@@ -20,11 +20,6 @@ var (
 	frameCounter int32
 )
 
-type polarCoor struct {
-	d float32 // Distance from origin (not called "r" since that's used for red component)
-	φ float32
-}
-
 type rgb struct {
 	r, g, b float32
 }
@@ -39,9 +34,12 @@ var (
 
 // Linearized arrays of dimension height x width
 var (
-	polar []polarCoor // Storage for polar coordinates
-	clut  []rgb       // Storate for clut
+	angle []float32 // Storage for θ part of polar coordinate
+	clut  []rgb     // Storate for clut
 )
+
+// Special value for "angle" indicating that point is outside unit circle
+const outsideUnitCircle = float32(8)
 
 // Init specifies the size of the PixMap seen by subsequent calls to Draw
 func Init(width, height int32) {
@@ -64,12 +62,16 @@ func Init(width, height int32) {
 	frameValid = make([]bool, nFrame)
 
 	// Compute polar coordinates
-	polar = make([]polarCoor, height*width)
+	angle = make([]float32, height*width)
 	for i := int32(0); i < height; i++ {
 		for j := int32(0); j < width; j++ {
 			x := float32(j)*xScale + xOffset
 			y := float32(i)*yScale + yOffset
-			polar[i*width+j] = polarCoor{d: math32.Hypot(x, y), φ: math32.Atan2(-y, x)}
+			if x*x+y*y <= 1 {
+				angle[i*width+j] = math32.Atan2(-y, x)
+			} else {
+				angle[i*width+j] = outsideUnitCircle
+			}
 		}
 	}
 }
@@ -86,13 +88,12 @@ func getFrame(k int32) []nimble.Pixel {
 		for i := int32(0); i < height; i++ {
 			for j := int32(0); j < width; j++ {
 				var color nimble.Pixel
-				p := polar[i*width+j]
-				if p.d <= 1 {
-					delta := p.φ - θ
-					if delta < 0 {
-						delta += 2 * π
+				φ := angle[i*width+j]
+				if φ != outsideUnitCircle {
+					factor := (φ - θ) * (1 / (2 * π))
+					if factor < 0 {
+						factor += 1
 					}
-					factor := delta * (1 / (2 * π))
 					c := clut[i*width+j]
 					color = nimble.RGB(c.r*factor, c.g*factor, c.b*factor)
 				} else {
