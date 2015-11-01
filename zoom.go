@@ -5,8 +5,9 @@ import (
 )
 
 var (
-	zoomRate   float32
-	zoomAmount float32
+	zoomRate        float32
+	zoomAmount      float32
+	zoomCompression float32
 )
 
 const (
@@ -51,7 +52,7 @@ func updateZoom(dt float32) {
 	zoomAmount = z
 	if z != 0 {
 		const min, max = 1., 16.
-		universe.SetBoxFraction(min / (min + (max-min)*(1-z)))
+		zoomCompression = min / (min + (max-min)*(1-z))
 	} else {
 		fourierIsVisible = false
 		endGame()

@@ -22,7 +22,7 @@ func initCritterSprites(width, height int32) {
 
 var harmonicStorage [universe.MaxCritter]fourier.Harmonic
 
-// Draw Frequons in Fourier domain
+// drawFrequeonsFourier draws the frequency-domain representation of Frequons.
 func drawFrequonsFourier(pm nimble.PixMap) {
 	c := universe.Zoo
 	h := harmonicStorage[:len(c)]
@@ -38,8 +38,9 @@ func drawFrequonsFourier(pm nimble.PixMap) {
 	} else {
 		ampScale = 1 / float32(len(c))
 	}
-	// FIXME - use scheme from universe.Scheme() when drawing the fourier view
 	fracX, fracY := universe.BoxFraction()
+	fracX *= zoomCompression
+	fracY *= zoomCompression
 	sizeX, sizeY := pm.Size()
 
 	// Set up harmonics
@@ -73,7 +74,7 @@ func drawFrequonsFourier(pm nimble.PixMap) {
 	}
 }
 
-// Draw Frequons in spatial domain
+// drawFrequeonsSpatial draws the spatial-domain representation of Frequons.
 func drawFrequonsSpatial(pm nimble.PixMap, xf, yf int32) {
 	for k := 1; k < len(universe.Zoo); k++ {
 		c := &universe.Zoo[k]

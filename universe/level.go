@@ -182,17 +182,7 @@ func Scheme() coloring.SchemeBits {
 }
 
 func BoxFraction() (fracX, fracY float32) {
-	fracX = compressX
-	fracY = compressY
-	return
-}
-
-func SetBoxFraction(frac float32) {
-	if frac < 0 || frac > 1 {
-		panic("SetBoxFraction: bad frac")
-	}
-	compressX = frac
-	compressY = frac
+	return compressX, compressY
 }
 
 // NKill returns the number of aliens killed so far.
