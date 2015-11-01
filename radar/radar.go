@@ -7,19 +7,21 @@ import (
 	"math"
 )
 
-var frameStorage []nimble.Pixel
-var frameSize, frameHeight int32
-
-func getFrame(k int32) []nimble.Pixel {
-	return frameStorage[k*frameSize : (k+1)*frameSize]
-}
+var (
+	frameStorage []nimble.Pixel
+	frameSize    int32
+	frameHeight  int32
+	frameValid   []bool // [k] is true iff frame is valid
+)
 
 const nFrame = 120
 
-var frameCounter int32
+var (
+	frameCounter int32
+)
 
 type polarCoor struct {
-	d float32 // Distance from origin (r not used to avoid confusion with red component)
+	d float32 // Distance from origin (not called "r" since that's used for red component)
 	φ float32
 }
 
@@ -59,6 +61,7 @@ func Init(width, height int32) {
 	// Allocate frames
 	frameSize = height * width
 	frameStorage = make([]nimble.Pixel, nFrame*frameSize)
+	frameValid = make([]bool, nFrame)
 
 	// Compute polar coordinates
 	polar = make([]polarCoor, height*width)
@@ -71,27 +74,16 @@ func Init(width, height int32) {
 	}
 }
 
-type colorMap interface {
-	Color(x, y float32) (r, g, b float32)
-}
-
-func SetColoring(cm colorMap) {
-	width, height := xSize, ySize
-
-	// Compute clut as if there was no "radar sweep"
-	for i := int32(0); i < height; i++ {
-		for j := int32(0); j < width; j++ {
-			x := float32(j)*xScale + xOffset
-			y := float32(i)*yScale + yOffset
-			r, g, b := cm.Color(x, y)
-			clut[i*width+j] = rgb{r, g, b}
-		}
-	}
-
-	// Construct the frames, incorporating "sweep"
-	for t := int32(0); t < nFrame; t++ {
-		θ := float32(t)/nFrame*(2*π) - π
-		pm := nimble.MakePixMap(width, height, getFrame(t), width)
+// Get pixels for the kth frame in the animation of the radar.
+// Frames are constructed lazily to avoid introducing a big delay when the color scheme changes.
+func getFrame(k int32) []nimble.Pixel {
+	f := frameStorage[k*frameSize : (k+1)*frameSize]
+	if !frameValid[k] {
+		// Need to compute the frame
+		width, height := xSize, ySize
+		// Construct the frame, incorporating "sweep"
+		θ := float32(k)/nFrame*(2*π) - π
+		pm := nimble.MakePixMap(width, height, f, width)
 		for i := int32(0); i < height; i++ {
 			for j := int32(0); j < width; j++ {
 				var color nimble.Pixel
@@ -110,11 +102,42 @@ func SetColoring(cm colorMap) {
 				pm.SetPixel(j, i, color)
 			}
 		}
+		frameValid[k] = true
 	}
-
+	return f
 }
 
-func Draw(pm nimble.PixMap, running bool) {
+type colorMap interface {
+	Color(x, y float32) (r, g, b float32)
+}
+
+var currentMap colorMap
+
+func setColoring(cm colorMap) {
+	if cm == currentMap {
+		return
+	}
+	currentMap = cm
+
+	// Compute clut as if there was no "radar sweep"
+	width, height := xSize, ySize
+	for i := int32(0); i < height; i++ {
+		for j := int32(0); j < width; j++ {
+			x := float32(j)*xScale + xOffset
+			y := float32(i)*yScale + yOffset
+			r, g, b := cm.Color(x, y)
+			clut[i*width+j] = rgb{r, g, b}
+		}
+	}
+
+	// Mark frames a invalid
+	for i := range frameValid {
+		frameValid[i] = false
+	}
+}
+
+func Draw(pm nimble.PixMap, cm colorMap, running bool) {
+	setColoring(cm)
 	width, height := pm.Size()
 	if width != xSize || height != ySize {
 		panic(fmt.Sprintf("radar.Draw: (width,height)=(%v,%v) (xSize,ySize)=(%v,%v)\n",

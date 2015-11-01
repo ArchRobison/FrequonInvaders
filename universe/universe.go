@@ -74,9 +74,6 @@ var (
 
 func bounce(sref, vref *float32, limit, dt float32) {
 	s, v := *sref, *vref
-	if s < 0 || s > limit {
-		panic(fmt.Sprintf("universe.bounce: s=%v v=%v limit=%v dt=%v\n", s, v, limit, dt))
-	}
 	s += v * dt
 	for {
 		if s < 0 {

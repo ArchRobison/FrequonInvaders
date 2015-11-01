@@ -9,7 +9,8 @@ func Init(widthMax int32, harmonicLenMax int) {
 }
 
 // Generic version of Draw
-func Draw(pm nimble.PixMap, harmonics []Harmonic) {
+func Draw(pm nimble.PixMap, harmonics []Harmonic, cm colorMap) {
+	setColoring(cm)
 	n := len(harmonics)
 	w := make([]complex64, n)
 	u := make([]complex64, n)

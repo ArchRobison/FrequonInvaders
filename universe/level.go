@@ -208,7 +208,7 @@ func TallyKill() {
 }
 
 func BeginGame(isPractice_ bool) {
-	SetNLiveMax(0)
+	setDifficulty(0)
 	nKill = 0
 
 	if isPractice {

@@ -20,11 +20,6 @@ const title = "Frequon Invaders 2.3"
 const edition = "(Go Edition)"
 
 const debugMode = true
-const benchmarkMode = false
-
-var winTitle string = title
-
-var winWidth, winHeight int = 1024, 768
 
 type context struct {
 }
@@ -41,8 +36,6 @@ func updateClock() (dt float32) {
 	lastTime = t
 	return
 }
-
-var invStorage = make([]fall.Invader, universe.MaxCritter)
 
 func (context) KeyDown(k nimble.Key) {
 	switch k {
@@ -92,6 +85,8 @@ var (
 	dividerCount     = 0
 )
 
+var invStorage = make([]fall.Invader, universe.MaxCritter)
+
 func (context) Render(pm nimble.PixMap) {
 	dt := updateClock()
 
@@ -121,6 +116,9 @@ func (context) Render(pm nimble.PixMap) {
 		// Fourier view
 		drawFrequonsFourier(pm.Intersect(fourierPort))
 		drawFrequonsSpatial(pm.Intersect(fourierPort), xf, yf)
+		if debugMode {
+			tallyFourierFrame()
+		}
 	} else {
 		// Teletype view
 		teletype.Draw(pm.Intersect(fourierPort))
@@ -143,7 +141,7 @@ func (context) Render(pm nimble.PixMap) {
 
 	// Radar view
 	if radarIsVisible {
-		radar.Draw(pm.Intersect(radarPort), radarIsRunning)
+		radar.Draw(pm.Intersect(radarPort), universe.Scheme(), radarIsRunning)
 	} else {
 		pm.DrawRect(radarPort, nimble.Black)
 	}
@@ -181,7 +179,7 @@ func (context) Init(width, height int32) {
 	initCritterSprites(width, height)
 	initPastel()
 	teletype.Init("Characters.png")
-	if benchmarkMode {
+	if debugMode && benchmarkMode {
 		bootSequencePeriod = 0
 		setMode(modeTraining)
 	} else {
@@ -229,9 +227,7 @@ func partitionScreen(width, height int32) {
 	fall.Init(fallPort.Size())
 	radar.Init(radarPort.Size())
 	score.Init(scorePort.Size())
-	radar.SetColoring(coloring.AllBits)
 	fourier.Init(fourierPort.Width(), universe.MaxCritter)
-	fourier.SetColoring(coloring.AllBits)
 }
 
 func youLose() {
@@ -267,6 +263,8 @@ func setMode(m mode) {
 	case modeSplash, modeName, modeVanity:
 	case modeTraining, modeGame:
 		universe.BeginGame(m == modeTraining)
+		// Temporarily set NLiveMax to 0.  End of boot sequence will set it to 1.
+		universe.SetNLiveMax(0)
 		startBootSequence()
 	}
 	currentMode = m
@@ -290,6 +288,14 @@ func endGame() {
 }
 
 func main() {
+	if debugMode {
+		for _, fun := range profileStart() {
+			defer fun()
+		}
+		if benchmarkMode {
+			nimble.SetWindowSize(1920, 1080)
+		}
+	}
 	nimble.SetWindowTitle(title + " " + edition)
 	initMenuItem()
 	rand.Seed(time.Now().UnixNano())

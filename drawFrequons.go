@@ -64,7 +64,7 @@ func drawFrequonsFourier(pm nimble.PixMap) {
 		Right:  sizeX - marginX,
 		Top:    marginY,
 		Bottom: sizeY - marginY,
-	}), h)
+	}), h, universe.Scheme())
 	if marginX != 0 || marginY != 0 {
 		pm.DrawRect(nimble.Rect{Left: 0, Right: sizeX, Top: 0, Bottom: marginY}, nimble.Black)
 		pm.DrawRect(nimble.Rect{Left: 0, Right: sizeX, Top: sizeY - marginY, Bottom: sizeY}, nimble.Black)

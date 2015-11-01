@@ -32,7 +32,8 @@ func Init(widthMax int32, harmonicLenMax int) {
 	wStorage = make([]cvec, m)
 }
 
-func Draw(pm nimble.PixMap, harmonics []Harmonic) {
+func Draw(pm nimble.PixMap, harmonics []Harmonic, cm colorMap) {
+	setColoring(cm)
 	n := len(harmonics)
 	// m = n rounded up to even
 	m := n + n&1
