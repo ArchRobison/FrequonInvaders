@@ -251,8 +251,6 @@ const (
 	modeVanity
 )
 
-// FIXME -split this routine into two routines, one for setting up the menus
-// and one for setting other state.
 func setMode(m mode) {
 	fourierIsVisible = false
 	fallIsVisible = false
