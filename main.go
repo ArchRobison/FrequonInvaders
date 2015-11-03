@@ -104,6 +104,8 @@ var (
 	dividerCount     = 0
 )
 
+var cursorIsVisible = true
+
 var invStorage = make([]fall.Invader, universe.MaxCritter)
 
 func (context) Render(pm nimble.PixMap) {
@@ -173,6 +175,19 @@ func (context) Render(pm nimble.PixMap) {
 	// Menu bar
 	if len(menuBar) > 0 {
 		menu.DrawMenuBar(pm, menuBar)
+	}
+
+	// Cursor
+	showCursor := true
+	switch currentMode {
+	case modeGame:
+		showCursor = false
+	case modeTraining:
+		showCursor = !fourierPort.Contains(mouseX, mouseY)
+	}
+	if showCursor != cursorIsVisible {
+		nimble.ShowCursor(showCursor)
+		cursorIsVisible = showCursor
 	}
 }
 

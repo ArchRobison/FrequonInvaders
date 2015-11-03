@@ -87,5 +87,7 @@ func drawFrequonsSpatial(pm nimble.PixMap, xf, yf int32) {
 			}
 		}
 	}
-	sprite.Draw(pm, xf, yf, critterSeq[0][0], nimble.White)
+	if fourierPort.Contains(mouseX, mouseY) {
+		sprite.Draw(pm, xf, yf, critterSeq[0][0], nimble.White)
+	}
 }
