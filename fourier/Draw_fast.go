@@ -18,7 +18,9 @@ var (
 	tmpStorage  [12]nimble.Pixel
 )
 
-// Set max. width and max. harmonics
+// Init initializes storage used by Draw.  The parameters specify the
+// maximum width of the PixMap and maximum number of harmonics that
+// will be passed to Draw.
 func Init(widthMax int32, harmonicLenMax int) {
 	footLenMax := (widthMax + 11) / 12
 
@@ -32,6 +34,7 @@ func Init(widthMax int32, harmonicLenMax int) {
 	wStorage = make([]cvec, m)
 }
 
+// Draw draws a Fourier transform on the given PixMap.
 func Draw(pm nimble.PixMap, harmonics []Harmonic, cm colorMap) {
 	setColoring(cm)
 	n := len(harmonics)

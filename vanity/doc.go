@@ -1,2 +1,4 @@
-// vanity deals with the "vanity board", i.e. player names and scores for bragging rights.
+/*
+   Package vanity deals with the "vanity board" and reading/writing score files.
+*/
 package vanity

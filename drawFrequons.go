@@ -22,7 +22,17 @@ func initCritterSprites(width, height int32) {
 
 var harmonicStorage [universe.MaxCritter]fourier.Harmonic
 
-// drawFrequeonsFourier draws the frequency-domain representation of Frequons.
+var phaseRoll float32
+
+func updatePhaseRoll(dt float32) {
+	const rate = 2 * math32.Pi * (0.25) // rate in cycles per second
+	phaseRoll += rate * dt
+	for phaseRoll > math32.Pi {
+		phaseRoll -= 2 * math32.Pi
+	}
+}
+
+// drawFrequonsFourier draws the frequency-domain representation of Frequons.
 func drawFrequonsFourier(pm nimble.PixMap) {
 	c := universe.Zoo
 	h := harmonicStorage[:len(c)]
@@ -53,7 +63,7 @@ func drawFrequonsFourier(pm nimble.PixMap) {
 		ωy := (c[i].Sy - cy) * ωScale
 		h[i].Ωx = ωx
 		h[i].Ωy = ωy
-		h[i].Phase = α*ωx + β*ωy
+		h[i].Phase = α*ωx + β*ωy + phaseRoll
 		// Scale amplitude so that DFT values fit within domain of color lookup table.
 		h[i].Amplitude = c[i].Amplitude * ampScale
 	}

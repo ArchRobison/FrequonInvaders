@@ -55,9 +55,9 @@ var maxFrequon = menu.RadioState{Value: 1, OnSelect: func(value int) {
 	universe.SetNLiveMax(value)
 }}
 
-var peek = menu.MakeCheckItem("peek", false, universe.SetShowAlways)
-
 var menuBar = []*menu.Menu{}
+
+var rollPhase = menu.MakeCheckItem("phase roll", false, nil)
 
 func setMenus(m mode) {
 	menuBarWasPresent := len(menuBar) > 0
@@ -77,12 +77,16 @@ func setMenus(m mode) {
 	case modeTraining:
 		menuBar = []*menu.Menu{&fileMenu, &displayMenu, &invadersMenu, &colorMenu}
 		list := []menu.ItemInterface{
-			peek,
+			menu.MakeCheckItem("peek", false, universe.SetShowAlways),
 			menu.MakeRadioItem("stationary", &letFrequonsMove, 0),
 			menu.MakeRadioItem("moving", &letFrequonsMove, 1),
+			rollPhase,
 		}
 		for k := 0; k <= 13; k++ {
 			list = append(list, menu.MakeRadioItem(fmt.Sprintf("%v", k), &maxFrequon, k))
+		}
+		for _, k := range []int{0, 3, 4} {
+			list[k].GetItem().Flags |= menu.Separator
 		}
 		invadersMenu.Items = list
 	case modeGame:

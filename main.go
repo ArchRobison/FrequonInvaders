@@ -42,10 +42,7 @@ func (context) KeyDown(k nimble.Key) {
 		switch currentMode {
 		case modeSplash, modeVanity:
 			nimble.Quit()
-		case modeTraining:
-			youLose()
-		case modeGame:
-			// FIXME - need to handle as quit with current score
+		case modeTraining, modeGame:
 			youLose()
 		case modeName:
 			// FIXME - ask for confirmation
@@ -135,6 +132,9 @@ func (context) Render(pm nimble.PixMap) {
 		updateZoom(dt)
 
 		// Fourier view
+		if rollPhase.Value {
+			updatePhaseRoll(dt)
+		}
 		drawFrequonsFourier(pm.Intersect(fourierPort))
 		drawFrequonsSpatial(pm.Intersect(fourierPort), xf, yf)
 		tallyFourierFrame()
@@ -364,7 +364,7 @@ func main() {
 		if benchmarking {
 			winSpec = &windowSpec{1920, 1080, "benchmark"}
 		} else {
-			winSpec = &windowSpec{1024, 768, "debug"}
+			winSpec = &windowSpec{1024, 600, "debug"}
 		}
 	}
 	initMenuItem()

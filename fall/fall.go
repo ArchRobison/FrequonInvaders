@@ -1,5 +1,3 @@
-// Package fall implements the "Amplitude View" view, where
-// the player sees tics falling on a parabolic curve.
 package fall
 
 import (
@@ -7,30 +5,34 @@ import (
 )
 
 const (
-	tickHalfWidth  = 8
-	tickHalfHeight = 2
+	tickHalfWidth   = 8
+	tickHalfHeight  = 2
+	dotTimeInterval = 0.2
 )
 
+// Description of Frequon needed by Draw.
 type Invader struct {
-	Progress  float32 // Verical coordinate of tic mark
-	Amplitude float32 // Horizonal coordinate of tic mark
-	Color     nimble.Pixel
+	Progress  float32      // Verical coordinate of tic mark
+	Amplitude float32      // Horizonal coordinate of tic mark
+	Color     nimble.Pixel // color of tick mark
 }
 
 var background nimble.PixMap
 
+// Init initializes state used by Draw.  Init should be called once with width and
+// height values matching the size of the PixMap passed to future calls to Draw.
 func Init(width, height int32) {
 	background = nimble.MakePixMap(width, height, make([]nimble.Pixel, height*width), width)
 	background.Fill(nimble.Black)
 }
 
+// Time the most recent "trailing dots" were drawn.
 var lastDotTime float64
 
-const dotTimeInterval = 0.2
-
+// Draw the "fall" view onto the given PixMap.
 func Draw(pm nimble.PixMap, invaders []Invader) {
 	if pm.Width() != background.Width() || pm.Height() != background.Height() {
-		panic("fall.Draw: pm and background differ")
+		panic("fall.Draw: pm and background differ in size")
 	}
 
 	drawDot := false

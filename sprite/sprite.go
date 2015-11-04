@@ -7,11 +7,6 @@ import (
 	"sort"
 )
 
-type spriteRow struct {
-	y int8
-	x []int8
-}
-
 type fragment struct {
 	sx, sy float32 // Position (units = pixels)
 	vx, vy float32 // Velocity (units pixels/sec)
@@ -84,6 +79,11 @@ func (p byYX) Swap(i, j int) {
 	p[i], p[j] = p[j], p[i]
 }
 
+type spriteRow struct {
+	y int8
+	x []int8
+}
+
 type Sprite struct {
 	rows []spriteRow
 }
@@ -131,6 +131,7 @@ func MakeAnimation(radius int, self bool, seqLen int) (s []Sprite) {
 	return
 }
 
+// Draw draws the given sprite at (x0,y0) on dst with the given color.
 func Draw(dst nimble.PixMap, x0, y0 int32, src Sprite, color nimble.Pixel) {
 	w, h := dst.Size()
 	for _, s := range src.rows {

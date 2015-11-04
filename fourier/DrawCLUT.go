@@ -7,7 +7,7 @@ package fourier
 
 import "github.com/ArchRobison/Gophetica/nimble"
 
-// CLUTSize returns the size (of one axis) of the square color lookup table.
+// CLUTSize returns the length (of one side) of the (square) color lookup table.
 func CLUTSize() int32 {
 	return clutSize
 }
