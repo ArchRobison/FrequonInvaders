@@ -7,7 +7,7 @@ import (
 const (
 	tickHalfWidth   = 8
 	tickHalfHeight  = 2
-	dotTimeInterval = 0.2
+	dotTimeInterval = 0.3
 )
 
 // Description of Frequon needed by Draw.

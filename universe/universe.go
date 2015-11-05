@@ -2,22 +2,25 @@ package universe
 
 import (
 	"fmt"
+	"github.com/ArchRobison/FrequonInvaders/coloring"
 	"github.com/ArchRobison/FrequonInvaders/sound"
 	"github.com/ArchRobison/Gophetica/math32"
 	"math/rand"
 )
 
+// Critter represents the player or an alien.
 type Critter struct {
-	Sx, Sy    float32    // Position of particle (units=pixels) - frequency on "fourier" view
-	vx, vy    float32    // Velocity of particle (units=pixels/sec)
-	Amplitude float32    // Between 0 and 1 - horizontal position on "fall" view and amplitude in "fourier" view.  -1 for "self"
-	Progress  float32    // Vertical position on "fall" view, scaled [0,1]
-	fallRate  float32    // rate of maturation in maturity/sec
-	health    healthType // Initially initialHealth.  Subtracted down to 0. Negative values are death sequence values.  Jumps down to finalHealth at end of sequence
-	Show      bool       // If true, show in space domain
-	Id        int8       // Index into pastels
+	Sx, Sy    float32            // Position of particle (units=pixels) - frequency on "fourier" view
+	vx, vy    float32            // Velocity of particle (units=pixels/sec)
+	Amplitude float32            // Between 0 and 1 - horizontal position on "fall" view and amplitude in "fourier" view.  -1 for "self"
+	Progress  float32            // Vertical position on "fall" view, scaled [0,1]
+	fallRate  float32            // rate of maturation in maturity/sec
+	health    healthType         // Initially initialHealth.  Subtracted down to 0. Negative values are death sequence values.  Jumps down to deathThreshold at end of sequence.
+	Show      bool               // If true, show in space domain
+	Id        coloring.PastelHue // Color in spatial domain
 }
 
+// healthType encodes the health of a critter.  Positive values
 type healthType int16
 
 const (
@@ -27,21 +30,26 @@ const (
 	deathThreshold healthType = -0x8000
 )
 
-const killTime = 0.1 // Time it takes being close to kill
+const (
+	killTime         = 0.1 // Time in sec for being close to alien to kill it.
+	amplitudeDieTime = 2.0 // Time in sec for alien to die at full amplitude.
+)
 
-const amplitudeDieTime = 2.0 // Time in sec for Frequon to die at full amplitude.
+// MaxCritter is the maximum allowed critters, including self.
+const MaxCritter = 14
 
-const MaxCritter = 14 // Maximum allowed critters (including self)
-
+// Storage for zoo
 var zooStorage [MaxCritter]Critter
 
+// The set of active Critter. Zoo[0] is the player.
 var Zoo []Critter
 
+// Do initializations for fourier view of given size.
 func Init(width, height int32) {
 	xSize, ySize = float32(width), float32(height)
 	Zoo = zooStorage[:1]
 	for k := range zooStorage {
-		zooStorage[k].Id = int8(k)
+		zooStorage[k].Id = coloring.PastelHue(k)
 	}
 	velocityMax = 0
 	// Original sources used (ySize/32) for the square-root of the kill radius.
@@ -53,13 +61,13 @@ func Init(width, height int32) {
 // Update advances the universe forwards by time interval dt,
 // using (selfX,selfY) as the coordinates of the player.
 func Update(dt float32, selfX, selfY int32) GameState {
-	c := Zoo
-	if len(c) < 1 {
+	if len(Zoo) < 1 {
 		panic("universe.Zoo is empty")
 	}
-	c[0].Sx = float32(selfX)
-	c[0].Sy = float32(selfY)
-	c[0].Amplitude = -1
+	self := &Zoo[0]
+	self.Sx = float32(selfX)
+	self.Sy = float32(selfY)
+	self.Amplitude = -1
 
 	updateLive(dt)
 	cullDead()
@@ -163,7 +171,7 @@ var (
 	birthRate   float32 = 1 // units = per second, only an average
 	nLiveMax            = 1
 	velocityMax float32 = 60 // units = pixels per second
-	nKill       i       = 0
+	nKill               = 0
 	isPractice          = false
 )
 

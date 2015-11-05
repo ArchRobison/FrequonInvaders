@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/ArchRobison/FrequonInvaders/coloring"
 	"github.com/ArchRobison/FrequonInvaders/fourier"
 	"github.com/ArchRobison/FrequonInvaders/sprite"
 	"github.com/ArchRobison/FrequonInvaders/universe"
@@ -57,7 +58,7 @@ func drawFrequonsFourier(pm nimble.PixMap) {
 	// (cx,cy) is center of fourier view
 	cx, cy := 0.5*float32(sizeX)*fracX, 0.5*float32(sizeY)*fracY
 	α, β := -0.5*cx, -0.5*cy
-	const ωScale = 0.0005 // FIXME - should vary with screen size
+	ωScale := 0.15 / math32.Sqrt(float32(pm.Width()*pm.Height()))
 	for i := range h {
 		ωx := (c[i].Sx - cx) * ωScale
 		ωy := (c[i].Sy - cy) * ωScale
@@ -88,12 +89,15 @@ func drawFrequonsFourier(pm nimble.PixMap) {
 func drawFrequonsSpatial(pm nimble.PixMap, xf, yf int32) {
 	for k := 1; k < len(universe.Zoo); k++ {
 		c := &universe.Zoo[k]
-		if c.Show {
+		d := int(math32.Hypot(float32(xf)-c.Sx, float32(yf)-c.Sy))
+		if c.Show || d < NPastel {
 			i := c.ImageIndex()
 			if i < len(critterSeq[k]) {
-				// FIXME - draw only if close
-				// FIXME - fade according to distance
-				sprite.Draw(pm, int32(math32.Round(c.Sx)), int32(math32.Round(c.Sy)), critterSeq[k][i], Pastel[c.Id][0])
+				j := 0
+				if !c.Show {
+					j = d
+				}
+				sprite.Draw(pm, int32(math32.Round(c.Sx)), int32(math32.Round(c.Sy)), critterSeq[k][i], coloring.Pastel(c.Id, j))
 			}
 		}
 	}

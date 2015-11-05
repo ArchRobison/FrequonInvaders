@@ -116,9 +116,9 @@ func makeSpriteFromFragments(frags []fragment) (s Sprite) {
 	return
 }
 
-// Create sequence of frames
-func MakeAnimation(radius int, self bool, seqLen int) (s []Sprite) {
-	f := makeFragments(radius, self)
+// MakeAnimation creates a time-lapse sequence of frames for a sprite.
+func MakeAnimation(radius int, isSelf bool, seqLen int) (s []Sprite) {
+	f := makeFragments(radius, isSelf)
 	shuffleFragments(f)
 	tScale := float32(len(f)) / float32(seqLen)
 	for t := 0; t < seqLen; t++ {

@@ -2,7 +2,8 @@ package coloring
 
 import "github.com/ArchRobison/Gophetica/math32"
 
-type SchemeBits int
+// SchemeBits represents a color scheme for the fourier view.
+type SchemeBits byte
 
 const (
 	RealBit SchemeBits = 1 << iota

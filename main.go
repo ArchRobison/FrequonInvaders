@@ -12,6 +12,7 @@ import (
 	"github.com/ArchRobison/FrequonInvaders/teletype"
 	"github.com/ArchRobison/FrequonInvaders/universe"
 	"github.com/ArchRobison/FrequonInvaders/vanity"
+	"github.com/ArchRobison/Gophetica/math32"
 	"github.com/ArchRobison/Gophetica/nimble"
 	"math/rand"
 	"time"
@@ -149,13 +150,14 @@ func (context) Render(pm nimble.PixMap) {
 
 	// Fall view
 	if fallIsVisible {
-		inv := invStorage[0 : len(universe.Zoo)-1]
+		inv := invStorage[:len(universe.Zoo)-1]
 		for k := range inv {
 			c := &universe.Zoo[k+1]
 			inv[k] = fall.Invader{
 				Progress:  c.Progress,
 				Amplitude: c.Amplitude,
-				Color:     Pastel[c.Id][0]}
+				Color:     coloring.Pastel(c.Id, 0),
+			}
 		}
 		fall.Draw(pm.Intersect(fallPort), inv)
 	} else {
@@ -198,22 +200,15 @@ func (context) Render(pm nimble.PixMap) {
 var fallPort, radarPort, scorePort, fourierPort nimble.Rect
 var divider [3]nimble.Rect
 
-const NPastel = 32
-
-var Pastel [universe.MaxCritter][NPastel]nimble.Pixel
-
-func initPastel() {
-	for k := range Pastel {
-		coloring.PastelFade(Pastel[k][:], k, universe.MaxCritter)
-	}
-}
-
 var screenWidth, screenHeight int32
+
+var NPastel int
 
 func (context) Init(width, height int32) {
 	screenWidth, screenHeight = width, height
+	NPastel = int(math32.Round(math32.Sqrt(float32(width*height)) * (32. / 1440)))
 	initCritterSprites(width, height)
-	initPastel()
+	coloring.InitPastels(universe.MaxCritter, NPastel)
 	teletype.Init("Characters.png")
 	if benchmarking {
 		bootSequencePeriod = 0
