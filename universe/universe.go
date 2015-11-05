@@ -51,7 +51,7 @@ func Init(width, height int32) {
 }
 
 // Update advances the universe forwards by time interval dt,
-// using (selfX,selfY) as the coordinates the player.
+// using (selfX,selfY) as the coordinates of the player.
 func Update(dt float32, selfX, selfY int32) GameState {
 	c := Zoo
 	if len(c) < 1 {
@@ -163,7 +163,7 @@ var (
 	birthRate   float32 = 1 // units = per second, only an average
 	nLiveMax            = 1
 	velocityMax float32 = 60 // units = pixels per second
-	nKill       int     = 0
+	nKill       i       = 0
 	isPractice          = false
 )
 
@@ -208,7 +208,7 @@ func SetShowAlways(value bool) {
 func tryBirth(dt float32) {
 	j := len(Zoo)
 	if nLiveMax > len(zooStorage)-1 {
-		panic(fmt.Sprintf("birth: nLiveMax=%v > len(zooStorage)-1=%v\n", nLiveMax, len(zooStorage)-1))
+		panic(fmt.Sprintf("tryBirth: nLiveMax=%v > len(zooStorage)-1=%v\n", nLiveMax, len(zooStorage)-1))
 	}
 	if nLive := j - 1; nLive >= nLiveMax {
 		// Already reached population limit
@@ -229,7 +229,8 @@ func tryBirth(dt float32) {
 	sound.Play(sound.AntiTwang, alienPitch[Zoo[j].Id])
 }
 
-// FIXME - try to avoid coupling unverse Model to View this way.
+// ImageIndex returns the index into the critter's sprite animation sequence.
+// Positive are indices into the explosion sequence.
 func (c *Critter) ImageIndex() int {
 	if c.health >= 0 {
 		return 0
@@ -238,8 +239,8 @@ func (c *Critter) ImageIndex() int {
 	}
 }
 
-// Embeds five notes of Sprach Zarathustra, but since birth ids are randomly,
-// chosen no one will notice
+// alienPitch embeds five notes of Sprach Zarathustra, but since
+// birth ids are randomly chosen no one will notice
 var alienPitch = [MaxCritter]float32{
 	3.77549, 1.0000, 1.4983, 2.00000, 2.5198, 2.3784,
 	1.1224, 2.9966, 3.36358, 4.0000, 1.2599, 1.3348,
@@ -253,7 +254,7 @@ func init() {
 	}
 }
 
-// Set maximum absolute velocity to v pixels per second
+// Set maximum absolute velocity to v pixels per second.
 func SetVelocityMax(v float32) {
 	velocityMax = v
 	for k := 1; k < len(Zoo); k++ {
@@ -271,7 +272,7 @@ func SetVelocityMax(v float32) {
 	}
 }
 
-// Set maximum number of live aliens
+// Set maximum number of live aliens.
 func SetNLiveMax(n int) {
 	if n < 0 || n > MaxCritter-1 {
 		panic(fmt.Sprintf("SetNLiveMax: n=%v", n))

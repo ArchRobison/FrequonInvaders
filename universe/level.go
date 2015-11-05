@@ -222,7 +222,7 @@ type GameState int8
 var gameState GameState
 
 const (
-	GameActive = GameState(iota)
-	GameLose
-	GameWin
+	GameActive = GameState(iota) // Game is in progress
+	GameLose                     // Game has ended with player losing
+	GameWin                      // Game has ended with player winning
 )
