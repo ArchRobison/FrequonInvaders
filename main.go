@@ -79,6 +79,10 @@ func (context) KeyDown(k nimble.Key) {
 		case 's':
 			// Score a point
 			universe.TallyKill()
+		case 't':
+			// Begin training
+			bootSequencePeriod = 0
+			setMode(modeTraining)
 		}
 	}
 }

@@ -4,6 +4,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/ArchRobison/FrequonInvaders/coloring"
 	"github.com/ArchRobison/FrequonInvaders/fourier"
 	"github.com/ArchRobison/FrequonInvaders/menu"
 	"github.com/ArchRobison/FrequonInvaders/teletype"
@@ -41,7 +42,7 @@ var (
 	})
 )
 
-// State of stationary/moving radio buttons.
+// State of stationary/moving radio buttons on the "Invaders" menu.
 var letFrequonsMove = menu.RadioState{OnSelect: func(value int) {
 	if value == 0 {
 		universe.SetVelocityMax(0)
@@ -50,9 +51,28 @@ var letFrequonsMove = menu.RadioState{OnSelect: func(value int) {
 	}
 }}
 
-// State of "maximum number of Frequons" buttons.
+// State of "maximum number of Frequons" buttons on the "Invaders" menu.
 var maxFrequon = menu.RadioState{Value: 1, OnSelect: func(value int) {
 	universe.SetNLiveMax(value)
+}}
+
+// Entry for "Color" menu
+type colorSchemeItem struct {
+	name    string              // Name of scheme
+	missing coloring.SchemeBits // Aspect that is missing from the color scheme
+}
+
+var colorSchemeInfo = []colorSchemeItem{
+	{"Complex", 0},
+	{"Real", coloring.ImagBit},
+	{"Imaginary", coloring.RealBit},
+	{"Magnitude", coloring.PhaseBit},
+	{"Phase", coloring.MagnitudeBit},
+}
+
+// State of the "Color" buttons.
+var colorSchemeSelect = menu.RadioState{OnSelect: func(value int) {
+	universe.SetScheme(coloring.AllBits &^ colorSchemeInfo[value].missing)
 }}
 
 var menuBar = []*menu.Menu{}
@@ -76,6 +96,7 @@ func setMenus(m mode) {
 		}
 	case modeTraining:
 		menuBar = []*menu.Menu{&fileMenu, &displayMenu, &invadersMenu, &colorMenu}
+		// Make the "Invaders" menu
 		list := []menu.ItemInterface{
 			menu.MakeCheckItem("peek", false, universe.SetShowAlways),
 			menu.MakeRadioItem("stationary", &letFrequonsMove, 0),
@@ -89,6 +110,12 @@ func setMenus(m mode) {
 			list[k].GetItem().Flags |= menu.Separator
 		}
 		invadersMenu.Items = list
+		// Make the "Color" menu
+		list = make([]menu.ItemInterface, len(colorSchemeInfo))
+		for k, info := range colorSchemeInfo {
+			list[k] = menu.MakeRadioItem(info.name, &colorSchemeSelect, k)
+		}
+		colorMenu.Items = list
 	case modeGame:
 		menuBar = menuBar[:0]
 	}

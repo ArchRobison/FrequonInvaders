@@ -176,11 +176,18 @@ func setDifficulty(n int) {
 	}
 }
 
-// Return coloring scheme to be used for radar and fourier view
+// Scheme returns the coloring scheme to be used for radar and fourier view.
 func Scheme() coloring.SchemeBits {
 	return scheme
 }
 
+// SetScheme sets the coloring scheme.
+func SetScheme(s coloring.SchemeBits) {
+	scheme = s
+}
+
+// BoxFraction returns the fraction of the fourier view that should be used.
+// For example, a fracX=0.5 means that the fourier view should be compressed horizontally by 2x.
 func BoxFraction() (fracX, fracY float32) {
 	return compressX, compressY
 }
