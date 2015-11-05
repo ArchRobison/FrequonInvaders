@@ -58,7 +58,7 @@ func drawFrequonsFourier(pm nimble.PixMap) {
 	// (cx,cy) is center of fourier view
 	cx, cy := 0.5*float32(sizeX)*fracX, 0.5*float32(sizeY)*fracY
 	α, β := -0.5*cx, -0.5*cy
-	ωScale := 0.15 / math32.Sqrt(float32(pm.Width()*pm.Height()))
+	ωScale := 200. / float32(sizeX*sizeY)
 	for i := range h {
 		ωx := (c[i].Sx - cx) * ωScale
 		ωy := (c[i].Sy - cy) * ωScale
