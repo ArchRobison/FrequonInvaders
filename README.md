@@ -1,5 +1,5 @@
 # FrequonInvaders
-This is a work in progress to port [Frequon Invaders](http://www.blonzonics.us/games/frequon-invaders)
+This is a a port of [Frequon Invaders](http://www.blonzonics.us/games/frequon-invaders)
 from C++ to the Go Language
 
 ## Prerequisites
@@ -27,7 +27,7 @@ src/github.com/veandco/go-sdl2
 Use just `go build` to build a developer version, which has keyboard
 shortcuts for testing and profiling support.
 
-## Status (2015-Nov-1)
+## Status (2015-Nov-3)
 
 Works on Windows 8.  Not tested on other platforms.  
 
