@@ -225,8 +225,8 @@ function mul(z::Cmplx, x::Cmplx)
     mul(bol(b),z.re,x.im)
     mul(z.re,z.re,x.re)
     mul(z.im,z.im,x.re)
-    sub(z.re,z.re,eol(a))
-    add(z.im,z.im,eol(b))
+    sub(z.re,eol(a))
+    add(z.im,eol(b))
     eol(x)
     eol(z)
 end
@@ -251,7 +251,6 @@ function convert4(z::Cmplx, clut::Ireg, dstReg::Ireg, dstOff::Integer)
         mov(tmp, IndexedLoc(clut,zi,4))
         mov(Loc(dstReg,dstOff+4*k), tmp)
     end
-    # FIXME - need to eol z.re and z.im here
 end
 
 #---------------------------------------
