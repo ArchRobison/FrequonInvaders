@@ -85,7 +85,8 @@ func drawFrequonsFourier(pm nimble.PixMap) {
 	}
 }
 
-// drawFrequeonsSpatial draws the spatial-domain representation of Frequons.
+// drawFrequonsSpatial draws the spatial-domain representation of Frequons.
+// (xf,yf) is the location of the player.
 func drawFrequonsSpatial(pm nimble.PixMap, xf, yf int32) {
 	for k := 1; k < len(universe.Zoo); k++ {
 		c := &universe.Zoo[k]
