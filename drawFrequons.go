@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/ArchRobison/FrequonInvaders/coloring"
 	"github.com/ArchRobison/FrequonInvaders/fourier"
 	"github.com/ArchRobison/FrequonInvaders/sprite"
 	"github.com/ArchRobison/FrequonInvaders/universe"
@@ -88,17 +87,18 @@ func drawFrequonsFourier(pm nimble.PixMap) {
 // drawFrequonsSpatial draws the spatial-domain representation of Frequons.
 // (xf,yf) is the location of the player.
 func drawFrequonsSpatial(pm nimble.PixMap, xf, yf int32) {
+	nPastel := pastels.Width()
 	for k := 1; k < len(universe.Zoo); k++ {
 		c := &universe.Zoo[k]
-		d := int(math32.Hypot(float32(xf)-c.Sx, float32(yf)-c.Sy))
-		if c.Show || d < NPastel {
+		d := int32(math32.Hypot(float32(xf)-c.Sx, float32(yf)-c.Sy))
+		if c.Show || d < nPastel {
 			i := c.ImageIndex()
 			if i < len(critterSeq[k]) {
-				j := 0
+				j := int32(0)
 				if !c.Show {
 					j = d
 				}
-				sprite.Draw(pm, int32(math32.Round(c.Sx)), int32(math32.Round(c.Sy)), critterSeq[k][i], coloring.Pastel(c.Id, j))
+				sprite.Draw(pm, int32(math32.Round(c.Sx)), int32(math32.Round(c.Sy)), critterSeq[k][i], pastels.Pixel(j, int32(c.Id)))
 			}
 		}
 	}

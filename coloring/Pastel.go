@@ -4,7 +4,7 @@ import (
 	"github.com/ArchRobison/Gophetica/nimble"
 )
 
-func rgbOfHue(hue PastelHue, nHue int) (r, g, b float32) {
+func rgbOfHue(hue int32, nHue int32) (r, g, b float32) {
 	switch hue {
 	case 0:
 		// Self
@@ -30,28 +30,18 @@ func rgbOfHue(hue PastelHue, nHue int) (r, g, b float32) {
 	return
 }
 
-var (
-	rowSize int            // Length of a row in pastel
-	pastel  []nimble.Pixel // Linearized matrix with one row per hue
-)
-
-type PastelHue int8
-
-// InitPastel initializes the pastsel pallett for m hues with n degrees of fadedness.
-func InitPastels(nHue, nShade int) {
-	rowSize = nShade
-	pastel = make([]nimble.Pixel, nHue*nShade)
-	for h := 0; h < nHue; h++ {
-		r, g, b := rgbOfHue(PastelHue(h), nHue)
+// PastelPallette generates a pallette of pastel colors.
+// The pallette is returned as a PixMap with one row for each hue.
+func PastelPallette(nHue, nShade int32) (pm nimble.PixMap) {
+	pm = nimble.MakePixMap(nShade, nHue, make([]nimble.Pixel, nHue*nShade), nShade)
+	for h := int32(0); h < nHue; h++ {
+		r, g, b := rgbOfHue(h, nHue)
 		scale := 1 / float32(nShade)
-		for j := 0; j < nShade; j++ {
+		row := pm.Row(h)
+		for j := int32(0); j < nShade; j++ {
 			f := float32(nShade-j) * scale
-			pastel[h*nShade+j] = nimble.RGB(r*f, g*f, b*f)
+			row[j] = nimble.RGB(r*f, g*f, b*f)
 		}
 	}
-}
-
-// Pastel returns a pastel for the given hue and fadedness j.
-func Pastel(i PastelHue, j int) nimble.Pixel {
-	return pastel[int(i)*rowSize+j]
+	return
 }

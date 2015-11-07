@@ -2,7 +2,6 @@ package universe
 
 import (
 	"fmt"
-	"github.com/ArchRobison/FrequonInvaders/coloring"
 	"github.com/ArchRobison/FrequonInvaders/sound"
 	"github.com/ArchRobison/Gophetica/math32"
 	"math/rand"
@@ -17,7 +16,7 @@ type Critter struct {
 	fallRate  float32            // rate of maturation in maturity/sec
 	health    healthType         // Initially initialHealth.  Subtracted down to 0. Negative values are death sequence values.  Jumps down to deathThreshold at end of sequence.
 	Show      bool               // If true, show in space domain
-	Id        coloring.PastelHue // Color in spatial domain
+	Id        int8				 // Color in spatial domain, as index into pastel pallette
 }
 
 // healthType encodes the health of a critter.  Positive values
@@ -49,7 +48,7 @@ func Init(width, height int32) {
 	xSize, ySize = float32(width), float32(height)
 	Zoo = zooStorage[:1]
 	for k := range zooStorage {
-		zooStorage[k].Id = coloring.PastelHue(k)
+		zooStorage[k].Id = int8(k)
 	}
 	velocityMax = 0
 	// Original sources used (ySize/32) for the square-root of the kill radius.

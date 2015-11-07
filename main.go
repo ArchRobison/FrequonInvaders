@@ -156,7 +156,7 @@ func (context) Render(pm nimble.PixMap) {
 			inv[k] = fall.Invader{
 				Progress:  c.Progress,
 				Amplitude: c.Amplitude,
-				Color:     coloring.Pastel(c.Id, 0),
+				Color:     pastels.Pixel(0, int32(c.Id)),
 			}
 		}
 		fall.Draw(pm.Intersect(fallPort), inv)
@@ -202,13 +202,13 @@ var divider [3]nimble.Rect
 
 var screenWidth, screenHeight int32
 
-var NPastel int
+var pastels nimble.PixMap
 
 func (context) Init(width, height int32) {
 	screenWidth, screenHeight = width, height
-	NPastel = int(math32.Round(math32.Sqrt(float32(width*height)) * (32. / 1440)))
+	nShade := int32(math32.Round(math32.Sqrt(float32(width*height)) * (32. / 1440)))
 	initCritterSprites(width, height)
-	coloring.InitPastels(universe.MaxCritter, NPastel)
+	pastels = coloring.PastelPallette(universe.MaxCritter, nShade)
 	teletype.Init("Characters.png")
 	if benchmarking {
 		bootSequencePeriod = 0
