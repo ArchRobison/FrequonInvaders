@@ -6,13 +6,13 @@ import (
 	"unsafe"
 )
 
-// runBenchmark times the HFT kernel for the given number of iterations.
+// runBenchmark times the DFT kernel for the given number of iterations.
 // For sake of comparison with classic Frequon Invaders, the kernel
 // does only the accumulateToFeet and rotate steps, not the feetToPixels
 // step that does a few more sums and differences to compute the
 // actual Fourier transform.
 //
-// The current HFT kernel does only 16 floating-point operations (flops)
+// The current DFT kernel does only 16 floating-point operations (flops)
 // per foot, whereas the old one in "classic" did 24 flops.
 func runBenchmark(iterations int) (secs, flops float64) {
 	const m = 4
@@ -28,8 +28,8 @@ func runBenchmark(iterations int) (secs, flops float64) {
 			w[i].re[k] = real(c)
 			w[i].im[k] = imag(c)
 		}
-		u[i].u1 = cmplx64.Rect(1, 4*ω)
-		u[i].u3 = cmplx64.Rect(1, 12*ω)
+		u[i].u1 = cmplx64.Rect(1, vlen*ω)
+		u[i].u3 = cmplx64.Rect(1, pixelsPerFoot*ω)
 		v[i] = cmplx64.Rect(1, ω)
 	}
 	// 140 = number for feet used for game when played in full HDTV resolution

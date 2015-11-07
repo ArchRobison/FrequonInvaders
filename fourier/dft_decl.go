@@ -1,4 +1,4 @@
-// Declarations for HFT
+// Declarations for DFT
 
 package fourier
 
@@ -9,31 +9,36 @@ import (
 // vector length
 const vlen = 4
 
-// vector of float
+// vec is a vector of float
 type vec [vlen]float32
 
-// complex vector of float
+// cvec is a complex vector of float
+// Mathematically, it's isomorphic to a vector of complex,
+// but enabled more efficient evaluation of complex arithmetic.
 type cvec struct {
 	re, im vec
 }
 
-// "foot" struct of vectors that holds sums for computing
+// foot is a struct of vectors that holds sums for computing
 // a + bi, (a+bi)*(c+di), and (a+bi)*(c-di)
 //
 // It's called foot because the computation pattern resembles
 // a thee-toed foot:
 //
-//		      *u3
+//            *u3
 //        z---------> (next foot)
-//	     / \
+//       / \
 //      / | \
-//	  zu* z  zu
+//    zu* z  zu
 //
 type foot struct {
 	a, b, ac, bc, ad, bd vec
 }
 
-// Structure with u and u cubed.
+// pixelsPerFoot is the number of pixels computed from a foot
+const pixelsPerFoot = 3 * vlen
+
+// u13 holds a complex value u and its cube.
 type u13 struct {
 	u1, u3 complex64
 }

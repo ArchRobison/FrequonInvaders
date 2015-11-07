@@ -1,7 +1,7 @@
-// Generic version of HFT kernels.
+// Generic version of DFT kernels.
 //
 // These are not for production use, but instead serve as references for what
-// the assembly language kernels (e.g. hft_amd64.s) should do.
+// the assembly language kernels (e.g. dft_amd64.s) should do.
 // They also help test the test routines that test the kernels.
 //
 // If you need to target a platform without assembly language support,

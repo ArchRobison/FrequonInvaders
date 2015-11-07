@@ -24,17 +24,17 @@ func (z *cvec) get(i int) complex128 {
 }
 
 func put(z []cvec, i int, val complex128) {
-	z[i/4].put(i%4, val)
+	z[i/vlen].put(i%vlen, val)
 }
 
 func get(z []cvec, i int) complex128 {
-	return z[i/4].get(i % 4)
+	return z[i/vlen].get(i % vlen)
 }
 
 func toe(feet []foot, i int) complex64 {
-	f := &feet[i/12]
-	k := i % 4
-	switch i / 4 % 3 {
+	f := &feet[i/pixelsPerFoot]
+	k := i % vlen
+	switch i / vlen % 3 {
 	case 0:
 		return complex(f.ac[k]+f.bd[k], f.bc[k]-f.ad[k])
 	case 1:
@@ -53,21 +53,21 @@ func testAccumulateToFeet(which string, walk func(*[2]cvec, *[2]u13, []foot)) {
 	var a [2]cvec
 	var u [2]u13
 	for i := 0; i < 2; i++ {
-		for k := 0; k < 4; k++ {
+		for k := 0; k < vlen; k++ {
 			a[i].put(k, cmplx.Rect(r[i], φ[i]*float64(k)))
 		}
-		ω := cmplx.Rect(1, φ[i]*4)
+		ω := cmplx.Rect(1, φ[i]*vlen)
 		u[i].u1 = complex64(ω)
 		u[i].u3 = complex64(ω * ω * ω)
 	}
 
-	// n = number of chickenfeet
-	const n = 1920 / 12
+	// n = number of feet
+	const n = 1920 / pixelsPerFoot
 	var f [n]foot
 	walk(&a, &u, f[:])
 
-	for k := 0; k < 12*n; k++ {
-		expected := cmplx.Rect(r[0], φ[0]*float64(k-4)) + cmplx.Rect(r[1], φ[1]*float64(k-4))
+	for k := 0; k < pixelsPerFoot*n; k++ {
+		expected := cmplx.Rect(r[0], φ[0]*float64(k-vlen)) + cmplx.Rect(r[1], φ[1]*float64(k-vlen))
 		actual := complex128(toe(f[:], k))
 		dist := cmplx.Abs(actual - expected)
 		if dist > 1.1E-5 {
@@ -81,7 +81,7 @@ func testAccumulateToFeet(which string, walk func(*[2]cvec, *[2]u13, []foot)) {
 			walk(&a, &u, f[:])
 		}
 		t1 := time.Now()
-		fmt.Printf("%v: %.2f Gflop/sec\n", which, float64(n*4*16*2*trials)/1E9/t1.Sub(t0).Seconds())
+		fmt.Printf("%v: %.2f Gflop/sec\n", which, float64(n*vlen*16*2*trials)/1E9/t1.Sub(t0).Seconds())
 	}
 }
 
@@ -91,7 +91,7 @@ func testRotate(which string, rot func([]cvec, []complex64)) {
 	v := make([]complex64, n)
 	for i := 0; i < n; i++ {
 		v[i] = complex64(cmplx.Rect(1, float64(i)*0.1))
-		for j := 4 * i; j < 4*i+4; j++ {
+		for j := vlen * i; j < vlen*i+vlen; j++ {
 			put(a, j, cmplx.Rect(1, float64(j)/2))
 		}
 	}
@@ -99,7 +99,7 @@ func testRotate(which string, rot func([]cvec, []complex64)) {
 	copy(b, a)
 	rot(a, v)
 	for i := 0; i < n; i++ {
-		for j := 4 * i; j < 4*i+4; j++ {
+		for j := vlen * i; j < vlen*i+vlen; j++ {
 			actual := get(a, j)
 			expected := complex128(v[i]) * get(b, j)
 			if cmplx.Abs(actual-expected) > 1E-7 {
@@ -136,13 +136,13 @@ func checkEqual(actual float32, expected float32) {
 }
 
 func testFeetToPixels(which string, toPixels func([]foot, *[128][128]nimble.Pixel, []nimble.Pixel)) {
-	n := 1920 / 12 // Number of feet
+	n := 1920 / pixelsPerFoot // Number of feet
 
 	// Initialize feet
 	feet := make([]foot, n)
 	for i := 0; i < n; i++ {
 		f := &feet[i]
-		for k := 0; k < 4; k++ {
+		for k := 0; k < vlen; k++ {
 			f.a[k] = float32((1 + 2*i ^ k) % 128)
 			f.b[k] = float32((2 + 3*i ^ k) % 128)
 			f.bd[k] = float32((5*i ^ k) % 32)
@@ -160,8 +160,7 @@ func testFeetToPixels(which string, toPixels func([]foot, *[128][128]nimble.Pixe
 		}
 	}
 
-	// Must have 12 pixels per foot
-	row := make([]nimble.Pixel, 12*n)
+	row := make([]nimble.Pixel, pixelsPerFoot*n)
 
 	origFeet := make([]foot, len(feet))
 	copy(origFeet, feet)
@@ -171,15 +170,15 @@ func testFeetToPixels(which string, toPixels func([]foot, *[128][128]nimble.Pixe
 	for i := 0; i < n; i++ {
 		f := &origFeet[i]
 		g := &feet[i]
-		for k := 0; k < 4; k++ {
+		for k := 0; k < vlen; k++ {
 			var p nimble.Pixel
-			p = row[12*i+0+k]
+			p = row[pixelsPerFoot*i+0+k]
 			checkX(p, f.ac[k]+f.bd[k])
 			checkY(p, f.bc[k]-f.ad[k])
-			p = row[12*i+4+k]
+			p = row[pixelsPerFoot*i+vlen+k]
 			checkX(p, f.a[k])
 			checkY(p, f.b[k])
-			p = row[12*i+8+k]
+			p = row[pixelsPerFoot*i+2*vlen+k]
 			checkX(p, f.ac[k]-f.bd[k])
 			checkY(p, f.bc[k]+f.ad[k])
 			checkEqual(g.a[k], 64.5)
@@ -197,7 +196,7 @@ func testFeetToPixels(which string, toPixels func([]foot, *[128][128]nimble.Pixe
 			toPixels(feet, &clut, row)
 		}
 		t1 := time.Now()
-		fmt.Printf("%v: %.2f Gpixel/sec\n", which, float64(12*n*trials)/1E9/t1.Sub(t0).Seconds())
+		fmt.Printf("%v: %.2f Gpixel/sec\n", which, float64(pixelsPerFoot*n*trials)/1E9/t1.Sub(t0).Seconds())
 	}
 }
 
