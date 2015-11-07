@@ -38,6 +38,7 @@ func Init(widthMax int32, harmonicLenMax int) {
 }
 
 // Draw draws a Fourier transform on the given PixMap.
+// Transform values must lie on the unit circle in the complex plane.
 func Draw(pm nimble.PixMap, harmonics []Harmonic, cm colorMap) {
 	setColoring(cm)
 	n := len(harmonics)

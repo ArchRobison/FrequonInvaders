@@ -57,13 +57,13 @@ func runBenchmark(iterations int) (secs, flops float64) {
 	return
 }
 
-// Benchmark runs the CPU speed benchmark for Frequeon Invaders.
-// The return value is in units of gigaflops.
+// Benchmark runs the CPU speed benchmark for Frequon Invaders.
+// Returns floating-point operations per second.
 func Benchmark() float64 {
 	for n := 1; ; n *= 2 {
 		secs, flops := runBenchmark(n)
 		if secs > 0.1 || n >= 1<<20 {
-			return flops / secs * 1E-9
+			return flops / secs
 		}
 		// Time too short.  Double number of iterations and retry.
 	}
