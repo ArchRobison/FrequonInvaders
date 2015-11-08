@@ -26,12 +26,14 @@ var lightWidth, lightHeight int32 // Width and height of a light in pixels
 
 type state int
 
+// Get linearized slice of pixels for displaying kth light in state s.
 func getLight(k int, s state) []nimble.Pixel {
 	size := lightHeight * lightWidth
 	j := int32(2*k+int(s)) * lightHeight * lightWidth
 	return lightStorage[j : j+size]
 }
 
+// Init prepares state used by Draw.
 func Init(width, height int32) {
 	if width < 3 || height < 3 {
 		panic(fmt.Sprintf("score.Init: width=%v height=%v\n", width, height))
@@ -65,6 +67,7 @@ func Init(width, height int32) {
 	}
 }
 
+// Draw draws the score (as binary lights) on the given PixMap.
 func Draw(pm nimble.PixMap, scoreValue int) {
 	if pm.Height() != lightHeight {
 		panic(fmt.Sprintf("score.Draw: pm.Height()=%v lightHeight=%v\n", pm.Height(), lightHeight))
