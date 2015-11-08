@@ -22,8 +22,8 @@ func runBenchmark(iterations int) (secs, flops float64) {
 	)
 	for i := 0; i < m; i++ {
 		ω := float32(i) * 0.01
-		for k := 0; k < 4; k++ {
-			c := euler(float32(k+4) * ω)
+		for k := 0; k < vlen; k++ {
+			c := euler(float32(k+vlen) * ω)
 			w[i].re[k] = real(c)
 			w[i].im[k] = imag(c)
 		}
@@ -49,10 +49,10 @@ func runBenchmark(iterations int) (secs, flops float64) {
 	}
 	t1 := time.Now()
 	secs = t1.Sub(t0).Seconds()
-	// The 16*4*p is the floating-point operations for accumulateToFeet
+	// The 16*vlen*p is the floating-point operations for accumulateToFeet
 	// The +8 is for "rotate"
 
-	flops = float64((16*4*p + 8) * m * iterations)
+	flops = float64((16*vlen*p + 8) * m * iterations)
 	return
 }
 
