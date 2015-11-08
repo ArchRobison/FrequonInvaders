@@ -1,6 +1,9 @@
-package phrase
+package main
 
-var phraseList = []string{
+import "github.com/ArchRobison/FrequonInvaders/phrase"
+
+// grammar describes the grammar for teletype technobabble.
+var grammar = phrase.MakeGrammar([]string{
 	"1: Boot %A %O",
 	"1: Reset %A %O",
 	"1: Load %A %O",
@@ -51,4 +54,4 @@ var phraseList = []string{
 	"S: Score = $",
 	"H: Your score of $ merits recording.",
 	"W: You Win!",
-}
+})

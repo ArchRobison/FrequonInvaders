@@ -6,7 +6,6 @@ import (
 	"github.com/ArchRobison/FrequonInvaders/fall"
 	"github.com/ArchRobison/FrequonInvaders/fourier"
 	"github.com/ArchRobison/FrequonInvaders/menu"
-	"github.com/ArchRobison/FrequonInvaders/phrase"
 	"github.com/ArchRobison/FrequonInvaders/radar"
 	"github.com/ArchRobison/FrequonInvaders/score"
 	"github.com/ArchRobison/FrequonInvaders/teletype"
@@ -308,7 +307,7 @@ func setMode(m mode) {
 		}
 	case modeName:
 		teletype.Reset()
-		teletype.PrintUpper(phrase.GenerateWithNumber(rune('H'), universe.NKill()) + "\n")
+		teletype.PrintUpper(grammar.GenerateWithNumber(rune('H'), universe.NKill()) + "\n")
 		teletype.PrintUpper("Please enter your name:\n")
 		teletype.DisplayCursor(true)
 	case modeTraining, modeGame:
@@ -332,7 +331,7 @@ func endGame() {
 	teletype.Reset()
 	n := universe.NKill()
 	if n >= 64 {
-		teletype.PrintUpper(phrase.Generate(rune('W')) + "\n")
+		teletype.PrintUpper(grammar.Generate(rune('W')) + "\n")
 	}
 	if vanity.IsWorthyScore(records, uint8(n)) {
 		setMode(modeName)

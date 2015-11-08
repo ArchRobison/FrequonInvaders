@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/ArchRobison/FrequonInvaders/phrase"
 	"github.com/ArchRobison/FrequonInvaders/sound"
 	"github.com/ArchRobison/FrequonInvaders/teletype"
 )
@@ -36,7 +35,7 @@ func advanceBootSequence(dt float32) {
 	n := bootSequenceIndex
 	bootSequenceIndex = n + 1
 	if 1 <= n && n <= 8 {
-		teletype.PrintUpper(phrase.Generate(rune('0' + n)))
+		teletype.PrintUpper(grammar.Generate(rune('0' + n)))
 		teletype.PrintChar('\n')
 	}
 	if 0 < n && n <= 8 {
