@@ -43,9 +43,10 @@ func TestMenu(t *testing.T) {
 	i3 := FruitItem{Item{Label: "Date", Flags: Disabled | Separator}}
 	i4 := MakeCheckItem("Elderberry", true, func(val bool) { fmt.Printf("Elderberry=%v\n", val) })
 	i5 := MakeSimpleItem("Fig", func() { fmt.Printf("Fig!\n") })
+	i6 := MakeSimpleItem("Quit", func() { nimble.Quit() })
 	theMenu = Menu{Label: "Fruits",
-		Items: []ItemInterface{&i0, i1, i2, &i3, i4, i5}}
+		Items: []ItemInterface{&i0, i1, i2, &i3, i4, i5, i6}}
 	nimble.AddRenderClient(&context{})
 	nimble.AddMouseObserver(&theMenu)
-	nimble.Run()
+	nimble.Run(nil)
 }
