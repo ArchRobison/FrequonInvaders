@@ -30,9 +30,10 @@ func rgbOfHue(hue int32, nHue int32) (r, g, b float32) {
 	return
 }
 
-// PastelPallette generates a pallette of pastel colors.
-// The pallette is returned as a PixMap with one row for each hue.
-func PastelPallette(nHue, nShade int32) (pm nimble.PixMap) {
+// PastelPalette returns a palette of pastel colors.
+// The pallette is returned as a PixMap with one row for each hue,
+// which fades to black with increasing column indices.
+func PastelPalette(nHue, nShade int32) (pm nimble.PixMap) {
 	pm = nimble.MakePixMap(nShade, nHue, make([]nimble.Pixel, nHue*nShade), nShade)
 	for h := int32(0); h < nHue; h++ {
 		r, g, b := rgbOfHue(h, nHue)

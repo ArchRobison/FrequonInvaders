@@ -6,6 +6,7 @@ import (
 
 const π = math32.Pi
 
+// phaseColor computes RGB components for pure hue at given angle of color space.
 func phaseColor(angle float32) (r, g, b float32) {
 	// j = index of hextant
 	if angle < 0 {

@@ -208,7 +208,7 @@ func (context) Init(width, height int32) {
 	screenWidth, screenHeight = width, height
 	nShade := int32(math32.Round(math32.Sqrt(float32(width*height)) * (32. / 1440)))
 	initCritterSprites(width, height)
-	pastels = coloring.PastelPallette(universe.MaxCritter, nShade)
+	pastels = coloring.PastelPalette(universe.MaxCritter, nShade)
 	teletype.Init("Characters.png")
 	if benchmarking {
 		bootSequencePeriod = 0

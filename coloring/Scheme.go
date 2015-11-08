@@ -2,7 +2,8 @@ package coloring
 
 import "github.com/ArchRobison/Gophetica/math32"
 
-// SchemeBits represents a color scheme for the fourier view.
+// SchemeBits represents a color scheme for the radar and fourier views.
+// The representation is a bitset, where clearing a bit removes a particulary property.
 type SchemeBits byte
 
 const (
@@ -26,7 +27,7 @@ func (scheme SchemeBits) Color(x, y float32) (r, g, b float32) {
 		y = 0
 	}
 	θ := math32.Atan2(-y, x)
-	d := float32(math32.Hypot(x, y))
+	d := math32.Hypot(x, y)
 	if d > 1 || scheme&MagnitudeBit == 0 {
 		d = 1.0
 	}
