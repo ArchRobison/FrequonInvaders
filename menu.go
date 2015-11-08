@@ -38,7 +38,7 @@ var (
 	highScores *menu.SimpleItem
 	cpuSpeed   = menu.MakeSimpleItem("CPU Speed", func() {
 		teletype.Reset()
-		teletype.Print(fmt.Sprintf("HFT SPEED = %.1f GFlops\n", fourier.Benchmark()*1E-9))
+		teletype.PrintUpper(fmt.Sprintf("HFT SPEED = %.1f GFlops\n", fourier.Benchmark()*1E-9))
 	})
 )
 
