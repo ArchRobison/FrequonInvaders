@@ -1,11 +1,12 @@
 // Generic version of DFT kernels.
 //
-// These are not for production use, but instead serve as references for what
-// the assembly language kernels (e.g. dft_amd64.s) should do.
+// These functions are not for production use, but instead serve as references
+// for what the assembly language kernels (e.g. dft_amd64.s) should do.
 // They also help test the test routines that test the kernels.
 //
 // If you need to target a platform without assembly language support,
-// use the slow version of func Draw that does not require the kernels.
+// you are probably better off using the slow pure Go version of func Draw
+// that does not require the kernels.
 
 package fourier
 
@@ -13,6 +14,7 @@ import (
 	"github.com/ArchRobison/Gophetica/nimble"
 )
 
+// accumulateToFeetSlow is a pure Go reference implementation of accumulateToFeet.
 func accumulateToFeetSlow(z *[2]cvec, u *[2]u13, feet []foot) {
 	for i := range feet {
 		f := &feet[i]
@@ -36,6 +38,7 @@ func accumulateToFeetSlow(z *[2]cvec, u *[2]u13, feet []foot) {
 	}
 }
 
+// feetToPixelsSlow is a pure Go reference implementation of feetToPixels.
 func feetToPixelSlow(feet []foot, clut *colorLookupTable, row []nimble.Pixel) {
 	for i := range feet {
 		f := &feet[i]
@@ -55,6 +58,7 @@ func feetToPixelSlow(feet []foot, clut *colorLookupTable, row []nimble.Pixel) {
 
 }
 
+// rotateSlow is a pure Go reference implementation of rotate.
 func rotateSlow(w []cvec, v []complex64) {
 	for i := range w {
 		for k := 0; k < vlen; k++ {
