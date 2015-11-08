@@ -6,26 +6,19 @@ import (
 	"unicode"
 )
 
-const (
-	charWidth      = 24
-	charHeight     = 32
-	textLineHeight = 40
-	textTopMargin  = 24
-	textLeftMargin = 24
-)
-
+// Init initializes the teletype package.
 func Init(fontFilename string) {
 	teletypeFont = loadFont(fontFilename)
 	teletypeColor = fontColor()
 	Reset()
 }
 
-// Return pointer to last line
+// lastLine returns pointer to last line.
 func lastLine() *[]byte {
 	return &teletypeDisplay[len(teletypeDisplay)-1]
 }
 
-// State of teletype display
+// State of teletype display.
 var (
 	teletypeDisplay = [][]byte{{}}
 	displayCursor   bool
@@ -90,11 +83,12 @@ func Backup() {
 	}
 }
 
-// Return string representation of last line.
+// CursorLine returns a string representation of last line.
 func CursorLine() string {
 	return string(*lastLine())
 }
 
+// DisplayCursor controls whether the cursor is displayed.
 func DisplayCursor(display bool) {
 	displayCursor = display
 }

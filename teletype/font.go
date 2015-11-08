@@ -5,9 +5,23 @@ import (
 	"github.com/ArchRobison/Gophetica/nimble"
 )
 
-type charRow uint32
+const (
+	charWidth      = 24
+	charHeight     = 32
+	textLineHeight = 40
+	textTopMargin  = 24
+	textLeftMargin = 24
+)
 
-type charMask [charHeight]charRow
+type (
+	charRow  uint32
+	charMask [charHeight]charRow
+)
+
+var (
+	teletypeColor []nimble.Pixel
+	teletypeFont  []charMask
+)
 
 func loadFont(filename string) []charMask {
 	pm, err := nimble.ReadPixMap(filename)
@@ -30,11 +44,6 @@ func loadFont(filename string) []charMask {
 	}
 	return font
 }
-
-var (
-	teletypeColor []nimble.Pixel
-	teletypeFont  []charMask
-)
 
 func fontColor() []nimble.Pixel {
 	c := make([]nimble.Pixel, 32)
