@@ -6,11 +6,11 @@ import (
 
 func init() {
 	var err error
-	menuFont, err = nimble.OpenFont("Roboto-Regular.ttf", 20) // FIXME - do not hardwire
+	menuFont, err = nimble.OpenFont("Roboto-Regular.ttf", 24) // FIXME - do not hardwire
 	if err != nil {
 		panic(err)
 	}
-	checkFont, err = nimble.OpenFont("unicons.1.0.ttf", 20) // FIXME - do not hardwire
+	checkFont, err = nimble.OpenFont("unicons.1.0.ttf", 24) // FIXME - do not hardwire
 	if err != nil {
 		panic(err)
 	}
