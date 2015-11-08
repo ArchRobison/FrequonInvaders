@@ -1,7 +1,6 @@
 package fourier
 
 import (
-	"github.com/ArchRobison/Gophetica/cmplx64"
 	"time"
 	"unsafe"
 )
@@ -24,13 +23,13 @@ func runBenchmark(iterations int) (secs, flops float64) {
 	for i := 0; i < m; i++ {
 		ω := float32(i) * 0.01
 		for k := 0; k < 4; k++ {
-			c := cmplx64.Rect(1.0, float32(k+4)*ω)
+			c := euler(float32(k+4) * ω)
 			w[i].re[k] = real(c)
 			w[i].im[k] = imag(c)
 		}
-		u[i].u1 = cmplx64.Rect(1, vlen*ω)
-		u[i].u3 = cmplx64.Rect(1, pixelsPerFoot*ω)
-		v[i] = cmplx64.Rect(1, ω)
+		u[i].u1 = euler(vlen * ω)
+		u[i].u3 = euler(pixelsPerFoot * ω)
+		v[i] = euler(ω)
 	}
 	// 140 = number for feet used for game when played in full HDTV resolution
 	const p = 140

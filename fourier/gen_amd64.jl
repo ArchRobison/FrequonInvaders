@@ -2,6 +2,9 @@
 # The program is *not* a general purpose assembly code generator.
 # It contains just enough to generate the kernals of interest.
 
+# Must be base-2 log of clutSize defined in clut.go
+const lgClutSize = 7
+
 # Floating-point operand (scalar or vector)
 abstract Operand
 
@@ -246,7 +249,7 @@ function convert4(z::Cmplx, clut::Ireg, dstReg::Ireg, dstOff::Integer)
     for k = 0:3
         extractRotate(zr, z.re, k)
         extractRotate(zi, z.im, k)
-        shl(zi,7)
+        shl(zi,lgClutSize)
         add(zi,zr)
         mov(tmp, IndexedLoc(clut,zi,4))
         mov(Loc(dstReg,dstOff+4*k), tmp)
@@ -382,7 +385,7 @@ emitln()
 #---------------------------------------
 # Emit accumulateToFeet
 #---------------------------------------
-emitln("// func feetToPixel(feet[]foot, clut*[128][128] pixel, row[]pixel)")
+emitln("// func feetToPixel(feet[]foot, clut*colorLookupTable, row[]pixel)")
 emitln("TEXT ·feetToPixel(SB), NOSPLIT, \$$(7*8)")
 reset(10)
 DI = Ireg("DI") # row

@@ -124,7 +124,7 @@ loop:
 	JG loop
 	RET
 
-// func feetToPixel(feet[]foot, clut*[128][128] pixel, row[]pixel)
+// func feetToPixel(feet[]foot, clut*colorLookupTable, row[]pixel)
 TEXT ·feetToPixel(SB), NOSPLIT, $56
 	MOVQ feet+0(FP), SI
 	MOVQ feet_len+8(FP), CX

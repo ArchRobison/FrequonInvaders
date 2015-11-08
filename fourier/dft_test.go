@@ -135,7 +135,7 @@ func checkEqual(actual float32, expected float32) {
 	}
 }
 
-func testFeetToPixels(which string, toPixels func([]foot, *[128][128]nimble.Pixel, []nimble.Pixel)) {
+func testFeetToPixels(which string, toPixels func([]foot, *colorLookupTable, []nimble.Pixel)) {
 	n := 1920 / pixelsPerFoot // Number of feet
 
 	// Initialize feet
@@ -153,9 +153,9 @@ func testFeetToPixels(which string, toPixels func([]foot, *[128][128]nimble.Pixe
 	}
 
 	// Initialize lookup table
-	clut := [128][128]nimble.Pixel{}
-	for i := 0; i < 128; i++ {
-		for j := 0; j < 128; j++ {
+	clut := colorLookupTable{}
+	for i := range clut {
+		for j := range clut[i] {
 			clut[i][j] = nimble.Pixel(i<<16 | j)
 		}
 	}

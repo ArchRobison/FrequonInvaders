@@ -36,7 +36,7 @@ func accumulateToFeetSlow(z *[2]cvec, u *[2]u13, feet []foot) {
 	}
 }
 
-func feetToPixelSlow(feet []foot, clut *[128][128]nimble.Pixel, row []nimble.Pixel) {
+func feetToPixelSlow(feet []foot, clut *colorLookupTable, row []nimble.Pixel) {
 	for i := range feet {
 		f := &feet[i]
 		for k := 0; k < vlen; k++ {

@@ -5,7 +5,6 @@
 package fourier
 
 import (
-	"github.com/ArchRobison/Gophetica/cmplx64"
 	"github.com/ArchRobison/Gophetica/nimble"
 	"unsafe"
 )
@@ -49,13 +48,14 @@ func Draw(pm nimble.PixMap, harmonics []Harmonic, cm colorMap) {
 	w := wStorage[:m]
 	for i, h := range harmonics {
 		for k := 0; k < vlen; k++ {
-			c := cmplx64.Rect(h.Amplitude*clutRadius, h.Phase+float32(k+vlen)*h.Ωx)
-			w[i].re[k] = real(c)
-			w[i].im[k] = imag(c)
+			d := h.Amplitude * clutRadius
+			c := euler(h.Phase + float32(k+vlen)*h.Ωx)
+			w[i].re[k] = d * real(c)
+			w[i].im[k] = d * imag(c)
 		}
-		u[i].u1 = cmplx64.Rect(1, vlen*h.Ωx)
-		u[i].u3 = cmplx64.Rect(1, pixelsPerFoot*h.Ωx)
-		v[i] = cmplx64.Rect(1, h.Ωy)
+		u[i].u1 = euler(vlen * h.Ωx)
+		u[i].u3 = euler(pixelsPerFoot * h.Ωx)
+		v[i] = euler(h.Ωy)
 	}
 	if n < m {
 		// Zero the extra element.

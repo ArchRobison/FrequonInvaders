@@ -5,7 +5,6 @@
 package fourier
 
 import (
-	"github.com/ArchRobison/Gophetica/cmplx64"
 	"github.com/ArchRobison/Gophetica/nimble"
 )
 
@@ -22,9 +21,9 @@ func Draw(pm nimble.PixMap, harmonics []Harmonic, cm colorMap) {
 	v := make([]complex64, n)
 	z := make([]complex64, n)
 	for i, h := range harmonics {
-		w[i] = cmplx64.Rect(h.Amplitude*clutRadius, h.Phase)
-		u[i] = cmplx64.Rect(1, h.Ωx)
-		v[i] = cmplx64.Rect(1, h.Ωy)
+		w[i] = complex(h.Amplitude*clutRadius, 0) * euler(h.Phase)
+		u[i] = euler(h.Ωx)
+		v[i] = euler(h.Ωy)
 	}
 	for y := int32(0); y < pm.Height(); y++ {
 		for i := 0; i < n; i++ {

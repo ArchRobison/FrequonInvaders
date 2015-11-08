@@ -45,6 +45,6 @@ type u13 struct {
 
 func accumulateToFeet(z *[2]cvec, u *[2]u13, feet []foot)
 
-func feetToPixel(feet []foot, clut *[128][128]nimble.Pixel, row []nimble.Pixel)
+func feetToPixel(feet []foot, clut *colorLookupTable, row []nimble.Pixel)
 
 func rotate(w []cvec, v []complex64)
