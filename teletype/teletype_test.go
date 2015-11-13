@@ -39,10 +39,23 @@ func (*context) Render(pm nimble.PixMap) {
 	Draw(pm)
 }
 
+type windowSpec struct {
+	width, height int32
+	title         string
+}
+
+func (w windowSpec) Size() (width, height int32) {
+	return w.width, w.height
+}
+
+func (w windowSpec) Title() string {
+	return w.title
+}
+
 // Requires visual inspection
 func TestTeletype(t *testing.T) {
 	Init("../Characters.png")
 	nimble.AddRenderClient(&context{})
 	nimble.AddKeyObserver(&context{})
-	nimble.Run()
+	nimble.Run(windowSpec{1024, 600, "teletype"})
 }
