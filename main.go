@@ -204,6 +204,9 @@ var screenWidth, screenHeight int32
 var pastels nimble.PixMap
 
 func (context) Init(width, height int32) {
+	if width < 640 || height < 400 {
+		panic(fmt.Sprintf("screen size of %v x %v is too small!", width, height))
+	}
 	screenWidth, screenHeight = width, height
 	nShade := int32(math32.Round(math32.Sqrt(float32(width*height)) * (32. / 1440)))
 	initCritterSprites(width, height)
