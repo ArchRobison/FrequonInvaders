@@ -27,8 +27,9 @@ src/github.com/veandco/go-sdl2
 Use just `go build` to build a developer version, which has keyboard
 shortcuts for testing and profiling support.
 
-## Status (2015-Nov-3)
+## Status (2015-Nov-12)
 
-Works on Windows 8.  Not tested on other platforms.  
+* Works on Windows 8 (Intel 64 processor).
+* Works on MacOS 10.11.1.  
 
-Please post issues for features that you think are missing from the classic version. 
+Please post issues for features that you think are missing that were in the classic version. 
