@@ -17,7 +17,7 @@ import (
 	"time"
 )
 
-const title = "Frequon Invaders 2.3"
+const title = "Frequon Invaders 2.2"
 const edition = "(Go Edition)"
 
 type context struct {
