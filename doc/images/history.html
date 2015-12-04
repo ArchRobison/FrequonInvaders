@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+<HEAD>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+<title>Frequon Invaders: Known Issues and Revision History </title>
+</HEAD>
+<body>
+<CENTER><H1>Known Issues and Revision History</H1></CENTER>
+<HR>
+<H2>Known Issues</H2>
+<UL>
+<LI>In training mode, the program writes directly to the screen buffer, instead of using
+    a back buffer, so discontinuities show during frame updates.
+    I'll fix this if someone can explain how to use Windows menu bars and buffer flipping at the same time.
+</UL>
+<HR>
+<H2> Revision History </H2>
+<DL>
+	<DT> Version 2.1 (2012)</dt>
+    <dd> <ul>
+        <li> Add Windows installer.</li>
+        </ul>
+    </dd>
+	<DT> Version 2.0 (2006)
+	<DD> <UL>
+		<LI> Add support for differing resolutions, including wide screens.
+		<LI> Add sound effects.
+		<LI> Add vanity board.
+		<LI> Increase maximum number of attacking aliens from 4 to 10 in game mode, and from 7 to 13 in training mode.
+		<LI> Rewrite HFT to use SSE instructions.  Added "Benchmark" option on menu to measure HFT speed.
+		<LI> Rewrite graphics to use full-screen mode with double buffering.
+	     </UL>
+	<DT> Version 1.3
+	<DD> <UL>
+	     <LI> Fix phase error.  In 1.2, the center of the display did not
+		  have zero phase for all frequencies.
+	     <LI> Fix documentation errors.  Thanks to Brian Robison for sending 
+		  corrections for version 1.2.
+	     </UL>
+	<DT> Version 1.2
+	<DD> <UL>
+	     <LI> First port to Windows.  
+	     <LI> Maximum number of invaders raised from 4 to 7.  
+	     <LI> Show self and invaders as circles instead of squares in spatial domain.
+	     <LI> Rewrite explosion algorithm - each pixel now modeled separately.
+	     </UL>
+	<DT> Version 1.1 (2001)
+	<DD> Original release (Macintosh)
+</DL>
+<HR>
+<A href="../README.html#about">Back to "About the Programming"</A>
+</body>
+</html>

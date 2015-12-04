@@ -1,0 +1,288 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+<HEAD>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+<TITLE>Frequon Invaders 2.2</TITLE>
+</HEAD>
+<BODY>
+<center><h1>Frequon Invaders 2.2 - Wide Screen Edition</h1></center>
+<center><EM>By Arch D. Robison </EM></center>
+<P>
+Last Revision: Dec. 4, 2015.  
+<UL>
+<li> <A href="#requirements">System Requirements</A> </li>
+<li> <A href="#install">Installing</A> </li>
+<li> <A href="#overview">Overview</A> </li>
+<li> <A href="#playing">Playing</A> </li>
+<li> <A href="#training">Training</A> </li>
+<li> <A href="#damage">Progressive Weirdness</A> </li>
+<li> <A href="#geeks">For Fourier Fans</A> </li>
+<li> <A href="#about">About the Programming</A> </li>
+<li> <A href="#legal">Legal</A> </li>
+<li> <A href="#footnotes">Footnotes</A> </li>
+</UL>
+<HR>
+<h2><a name="requirements">System Requirements</a></h2>
+<H3>Windows</H3>
+<P>Frequon Invaders 2.2 requires a 64-bit Windows OS and a display with at least 1024x768 graphics with 32-bit color.
+For 32-bit Windows, use version 2.1.
+<P>Frequon Invaders 2.2 has been tested on:</P>
+<UL>
+<LI> Intel&reg; Core&trade; i7-4770 running 64-bit Windows&reg; 8.1 </LI>
+</UL>
+
+<H3>Mac OS X</H3>
+<P>Any Mac&reg running OS X 10.7 or later should work.  Frequon Invaders 2.2 has been tested on:</P>
+<UL>
+<LI> MacBook&reg; Air running OS X&reg; 10.11.1</LI>
+</UL>
+
+<HR>
+<h2><a name="install">Installing</a></h2>
+<H3>Windows</H3>
+<OL>
+	<LI>Download the latest Frequon Invaders installer from the <A HREF="http://www.blonzonics.us/games/frequon-invaders/windows">Frequon Invaders home page</A>.</LI>
+	<LI>Click on the downloaded <TT>frequon*.msi</TT> file.</LI>  
+    <LI>Go through the installer steps.</LI>
+</OL>
+
+<H3>Mac OS X</H3>
+Apple's installer software has proven to be remarkably unreliable,
+so Frequon Invaders is provided as a <TT>.dmg</TT> file from 
+<A href="http://www.blonzonics.us/games/frequon-invaders/macos">
+http://www.blonzonics.us/games/seismic-duck/macos
+</a>.
+The <TT>.dmg</TT> file has the following:
+<CENTER><TABLE BORDER="1">
+	<TR> <TD>Frequon Invaders</TD> <TD>the application</TD> </TR>
+	<TR> <TD>LICENSE.rtf</TD> <TD>the license</TD> </TR>
+	<TR> <TD>README.html</TD> <TD>this documentation</TD> </TR>
+	<TR> <TD>images</TD> <TD>folder of images used by <TT>README.html</TT></TD> </TR>
+</TABLE>
+</CENTER>
+You can run Frequon Invaders directly off the <TT>.dmg</TT> file, or copy it to your <TT>Applications</TT> directory.
+<P>
+The application is unsigned ("unidentified developer"), 
+so you may need to use "control click" to run it the first time.
+
+<HR>
+<h2><a name="overview">Overview</a></h2>
+<p>Frequon Invaders is a video game breakthrough: 
+the action occurs in <EM>2 Dimensional Fourier Space</EM>.
+Points in normal space become waves in Fourier Space, and vice versa.
+Don't worry if you don't know a Fourier from a <A href="#ferrier">ferrier</A>.  
+Playing the game depends upon intuition that you'll develop while playing around with it.  
+Don't despair if you are lost at first.  
+The <a href="#training">training</a> mode will help you learn.</p>
+<HR>
+<h2><a name="playing">Playing</a></h2>
+<p>To start a game: Run ``Frequon Invaders.exe''.  
+You should see a black window.
+From the File menu, select "<B>Begin</B>".  
+This starts the boot sequence, which after some technobabble, ends in a window that looks like this:
+</p>
+<br>
+<CENTER><img src="images/screenshot.jpg" alt="screenshot"></CENTER>
+<BR>
+The window is divided into four panels:
+<DL>
+<DT>Score</DT>
+<DD> Shows the number of Frequons annihilated.  
+In the spirit of ultrageekosity, the numeral is in binary.  
+If it wraps around (64 annihilations), you win!  
+Points are not scored when you are in <A href="#training">training</A> mode.
+
+<dt><A name="radar">Radar</a></dt>
+<DD> 
+Shows how <A href="files/complex.html">complex numbers</A> 
+on the unit circle in the complex plane are mapped onto colors.  
+The mapping <A href="#damage">becomes weirder</A> as the game progresses.
+
+<DT>Amplitude</DT>
+<DD>Shows the amplitude of each launched Frequon as a pastel tick mark.  
+Each Frequon has a different color.   
+The amplitude grows as the Frequon descends, and is shown by the horizontal position of its tick mark. 
+The maximum number of launched Frequons increases as the game progresses, with a final limit of four.  The ticks descend in this panel.  
+The game ends if a Frequon reaches the bottom before you annihilate it.
+
+<DT>Fourier</DT>
+<DD>Shows your own "self" position in the spatial domain as a small hollow circle.
+You can move "self" around with the mouse.  
+The display also shows "self" and any launched Frequons in the Fourier Domain, 
+where they become wave patterns.  
+The crests of the waves relate to a particle position.  
+Imagine a ray drawn from the center of the panel to the particle.  
+The crests run perpendicular to this ray, like this:
+<CENTER><img src="images/crests.jpg" alt="crests"></CENTER>
+The wavelength of a particle shrinks as it moves away from the center.
+</DL>
+
+<H3>Autogain</H3>
+The <B>Autogain</B> item on the <B>Display</B> menu controls how the colors are scaled.  
+With autogain enabled, the colors of the waves are scaled to fit the available color range.  
+Thus as the Frequon waves gain amplitude, your wave loses (relative) amplitude.  
+With autogain disabled, the colors are not scaled according to amplitude, 
+but according to the number of Frequons that might simultaneously attack.    
+E.g., if there can be at most 2 attacking Frequons, 
+the colors will be scaled to allocate 1/3 of the range to each Frequon, and 1/3 to your "self".  
+I recommend keeping autogain on.
+
+<H3>Destroying Frequons</H3>
+As you get close to a Frequon, your wave and the Frequon's wave will approach maximal destructive 
+interference; i.e., you will see dark bands.  These widen as you approach a Frequon.  
+If you get close, the Frequon's spatial position appears as a solid circle.
+If you get really close, the Frequon is destroyed.  
+Its amplitude shrinks to zero, the circle explodes, and you gain a point.  
+If all the above sounds confusing, try the intuitive approach.   
+Scoot the cursor around.  
+See what happens.  
+Look for patterns of dark and light bands.  
+Scoot the cursor perpendicular to the bands.  
+After a while, you'll figure out how to react or panic.
+
+<HR>
+<h2><a name="training">Training</a></h2>
+Unless you dream in complex exponentials, you may be quite flustered the first time you play.  
+If so, try "Training" mode.  
+From the <B>File</B> menu, select <B>Training</B>.  
+This is like playing the game, except there is no scoring, and you can choose various options. 
+In training mode, there are two extra pulldown menus:
+<DL>
+<DT>Invaders</DT>
+<DD>The <B>Peek</B> option allows you to see where the Frequons are.
+The <B>Stationary</B> and <B>Moving</B> options let you pick whether Frequons are stationary or moving.  
+The <B>0</B>, <B>1</B>, <B>2</B> etc. options let you pick the number of Frequons.
+When set to zero, you see only the wave pattern for yourself.  
+<DT>Color</DT> 
+<DD>This menu controls the display of complex numbers in the Radar and Fourier displays.
+The default is <B>Complex</B>, which shows the full complex values of the wave pattern.
+<B>Real</B> shows only the real part, and
+<B>Imaginary</B> shows only the imaginary part.
+<B>Magnitude</B> shows only magnitude.
+<B>Phase</B> shows only phase, which makes playing so difficult that it is not part of the
+regular game.
+</DL>
+Here's a recommended approach if you are completely lost.
+First, try training with 0 Frequons.  
+Scoot the cursor around a bit and observe how the pattern changes.
+Now try 1 Frequon, and use the Peek option to view it.
+Scoot the cursor around, and observe how dark bands form when you get close to the Frequon.
+Then try with 2 Frequons once you get the hang of it.
+<P>
+Once you have the basics figured out, try it with <B>Moving</B> Frequons, 
+or with a different <B>Color</B> scheme.  One player reports having an easier
+time with the <B>Magnitude</B> display instead of the full <B>Complex</B> color scheme.
+<HR>
+<h2><a name="damage">Progressive Weirdness</a></h2>
+<p>
+As the game progresses, various "damage" occurs to your Radar and Fourier display.  
+For example, you might see only magnitude information (grey scale),
+or "lose" a primary color or two, thus reducing phase information.  
+</p>
+<p>
+Another form of damage causes you see see only the real component (red/green) 
+or only the imaginary component (yellow/blue).  
+This can lead the unwary player to a position exactly opposite the true location of a Frequon, 
+as shown below:
+</p>
+<CENTER><img src="images/real-only.jpg" alt="real only"></CENTER>
+Because only the real component is visible, 
+it will appear that perfect destructive cancellation has been reached, 
+even though in fact only the <EM>real</EM> part has been cancelled!  
+If only the <EM>imaginary</EM> component is visible, the display is peculiar in a different way:
+it appears as if a single wave is present, 
+as if the Frequon disappeared.   
+When fooled by either symmetry, 
+try jumping across to the diametrically opposing point.
+I recommend experimenting with these "aliasing" in the <B>Training</B> mode by setting 
+up <B>1</B> <B>Stationary</B> Frequon (with <B>Peek</B>) and observing what happens when
+the "self" is at the diametrically opposed position.
+<P>
+Another piece of weirdness at higher levels is partial collapse (horizontally or vertically) of
+the Fourier display.  If you know anything about how TV tubes work, 
+it gives a new meaning to "Captain, our horizontal deflector is weakening!"
+
+<HR>
+<h2><a name="geeks">For Fourier Fans</a></h2>
+<P>
+This section is for people who know what a Fourier Transform is.  
+This game uses the Hyper Fourier Transform (HFT), 
+which for a grid of NxN points, runs in time O(N<SUP>2</SUP>).  
+This is significantly faster than the O((N<SUP>2</SUP>) lg N) 
+time required by a Fast Fourier Transform (FFT).  
+Asymptotics aside, 
+the FFT requires "all-to-all" data exchange, which inherently hogs memory bandwidth.
+In contrast, the HFT has high data locality, and runs almost entirely in the processor's L1 cache.
+The HFT is restricted to data sets with <em>O</em>(1) non-zero values<A href="#HFT-is-joke">[2]</A>.  
+<P>
+The Frequons are 2D Kronecker deltas that bounce around in the spatial domain, 
+scaled by the Frequon's amplitude.   
+The player is a negated Kronecker delta at full amplitude.   
+These deltas are mapped onto the Fourier domain via the HFT.   
+The resulting complex function is displayed as colors per the "Radar" panel,
+which illustrates the coloring of a unit circle in the complex plane.
+
+<HR>
+<h2><A name="about">About the Programming</a></h2>
+<P>
+Though lacking in commercial polish, it is free, so you shouldn't complain.
+<A href="files/history.html">Here</A> is a list of known issues and a revision history.
+<P>
+To measure system's HFT single-core performance in Gigaflops, run <B>Ratings->CPU Speed</B>.  
+The HFT is hand-vectorized via hand-written assembly code using and 
+Streaming SIMD Extensions (SSE).
+It uses dependence breaking techniques to improve performance.
+It has been tuned for Intel&reg; Core<SUP><SMALL>TM</SMALL></SUP> 2 Duo.
+</P>
+<P>
+The sounds are mostly done with additive synthesis, combining harmonics with exponential envelopes.  
+The sounds for a Frequon entrance is a time reversal of its death twang.  
+The only sound not done by additive synthesis is the "thunk" when the Fourier display breaks,
+which is produced by integrating white noise.  
+</P>
+<P>
+The vanity board is protected by a checksum, to prevent cheating via binary editors.
+</P>
+<P>
+Versions up to 2.1 were written in C++, starting with a 75 MHz Mac Performa.  
+Version 2.2 is a 
+<a href="https://software.intel.com/en-us/blogs/2015/11/05/go-julia-fourier-open-source-frequon-invaders">
+rewrite
+in Go</a> that is intended to have the look and feel of version 2.1.
+It uses custom SSE kernels, wich improved efficiency, that were generated from a Julia script.
+</P>
+
+<h3><a name="Other">Other Freeware by the Author</a></h3>
+If you like Frequon Invaders, you might want to check out my other work
+at <A href="http://www.blonzonics.us/games">www.blonzonics.us/games</A>.
+
+<H3>To Reach The Author</H3>
+I welcome comments, and can be reached at:
+<CENTER><img src="images/address.jpg" alt="author's address"></CENTER>
+<HR>
+<h2><A name="legal">Legal</a></h2>
+<B>Distribution:</B> 
+Frequon Invaders 2.2 is freeware.  
+This software may be freely distributed as long as it is not modified 
+and this documentation accompanies it.
+<BR>
+<B>Disclaimer:</B> No warrantee expressed or implied.  
+Use this software at your own risk.
+<HR>
+<h2><a name="footnotes">Footnotes</a></h2>
+<A name="ferrier">
+[1] A <EM>ferrier</EM> is an obsolete term for a ferryman or boatman.
+</A>
+<BR>
+<A name="HFT-is-joke">
+[2] For the mathematical-humor impaired, HFT is a marketing term for a sparse DFT.
+</A>
+<HR>
+<SMALL>Intel, Pentium and Core are trademarks or registered trademarks of the Intel Corporation.
+       Windows is a trademark of the Microsoft Corporation.
+       MacBook Air is a trademark of the Apple Corporation.
+       Frequon Invaders 2.2 is the author's own creation and not endorsed by any corporation.
+       No orthonormal basis functions were harmed in the making of this game.
+</SMALL>
+</BODY>
+</HTML>
