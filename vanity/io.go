@@ -5,13 +5,10 @@ import (
 	"crypto/rand"
 	"crypto/sha1"
 	"io"
-	"os"
+    "github.com/ArchRobison/Gophetica/nimble"
 )
 
-// vanityFilePath returns the path to the vanity board file.
-func vanityFilePath() string {
-	return "vanity.dat" // FIXME
-}
+const vanityPartialPath = "us.blonzonics.frequon-invaders/vanity.dat"
 
 // The cryptographic signature checking can of course be circumvented
 // by inspecting the source and generating a fake signature. But I wanted
@@ -39,28 +36,28 @@ func WriteToFile(v []Record) (err error) {
 	h := hash(v, sig[:saltLen])
 	copy(sig[saltLen:], h[:])
 
-	path := vanityFilePath()
-	file, err := os.Create(path)
-	if err == nil {
-		defer file.Close()
-		f := bufio.NewWriter(file)
-		defer f.Flush()
-		// Write signature
-		f.Write(sig[:])
-		// Write each record
-		for i, _ := range v {
-			f.WriteByte(v[i].Score)
-			f.WriteString(v[i].Name)
-			f.WriteByte(0)
-		}
-	}
+	file, err := nimble.CreateRecordFile(vanityPartialPath)
+    if err !=nil {
+        return
+    }
+
+    defer file.Close()
+    f := bufio.NewWriter(file)
+    defer f.Flush()
+    // Write signature
+    f.Write(sig[:])
+    // Write each record
+    for i, _ := range v {
+        f.WriteByte(v[i].Score)
+        f.WriteString(v[i].Name)
+        f.WriteByte(0)
+    }
 	return
 }
 
 // ReadFromFile reads names/scores from the score file.
 func ReadFromFile() (v []Record, err error) {
-	path := vanityFilePath()
-	file, err := os.Open(path)
+	file, err := nimble.OpenRecordFile(vanityPartialPath)
 	// Read records
 	v = []Record{}
 	if err == nil {

@@ -306,7 +306,9 @@ func setMode(m mode) {
 		var err error
 		records, err = vanity.ReadFromFile()
 		if err != nil {
-			teletype.Print(err.Error())
+			if devConfig {
+				teletype.Print(err.Error())
+			}
 		}
 	case modeName:
 		teletype.Reset()
