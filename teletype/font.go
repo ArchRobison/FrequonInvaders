@@ -48,8 +48,9 @@ func loadFont(filename string) []charMask {
 func fontColor() []nimble.Pixel {
 	c := make([]nimble.Pixel, 32)
 	for i := range c {
-		green := (math32.Exp(-float32(i)*.2) + 0.5) * (2. / 3.)
-		red := (math32.Exp(-float32(i) * .4)) * 0.5
+		green := (math32.Exp(-float32(i)*.2) + 0.5) * (2./3.)
+        // Classic version had 0.5 for red
+		red := (math32.Exp(-float32(i) * .4)) * 0.4
 		c[i] = nimble.RGB(red, green, 0)
 	}
 	return c
