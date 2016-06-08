@@ -102,13 +102,10 @@ asm(x::Ireg) = x.asm
 # Location relative to a base register
 #---------------------------------------
 type Loc <: Mem
-    base :: Ireg 	# Base register
+    base :: Ireg    # Base register
     offset :: Int   # Offset
 end
 
-#---------------------------------------
-# Location relative to a base register
-#---------------------------------------
 asm(loc::Loc) = "$(loc.offset)($(asm(loc.base)))"
 
 type IndexedLoc <: Mem
@@ -124,7 +121,7 @@ asm(loc::IndexedLoc) = "($(asm(loc.base)))($(asm(loc.index))*$(loc.scale))"
 #---------------------------------------
 type Arg <: Mem
     name :: ASCIIString  # Name of the argument.  Go assembler requires one.
-    offset :: Int		 # Offset of argument from FP
+    offset :: Int	 # Offset of argument from FP
 end
 
 asm(arg::Arg) = "$(arg.name)+$(arg.offset)(FP)"
@@ -383,7 +380,7 @@ emitIn("RET")
 emitln()
 
 #---------------------------------------
-# Emit accumulateToFeet
+# Emit feetToPixel
 #---------------------------------------
 emitln("// func feetToPixel(feet[]foot, clut*colorLookupTable, row[]pixel)")
 emitln("TEXT ·feetToPixel(SB), NOSPLIT, \$$(7*8)")
