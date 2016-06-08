@@ -5,7 +5,7 @@
 # Must be base-2 log of clutSize defined in clut.go
 const lgClutSize = 7
 
-# Floating-point operand (scalar or vector)
+# Instruction operand
 abstract Operand
 
 # Memory location
