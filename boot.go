@@ -22,7 +22,7 @@ func startBootSequence() {
    the program was slowly computing lookup tables.  By the mid-2000s machines
    were so fast that it has no practical purpose anymore.  But to retain
    the original look of Frequon Invaders, it's done nonethless, with the
-   teletype techno-babble.  It like the flutes on concrete columnes. */
+   teletype techno-babble.  It's like the flutes on concrete columns. */
 func advanceBootSequence(dt float32) {
 	if bootSequenceIndex < 0 || bootSequenceIndex >= 10 {
 		return
@@ -38,8 +38,8 @@ func advanceBootSequence(dt float32) {
 		teletype.PrintUpper(grammar.Generate(rune('0' + n)))
 		teletype.PrintChar('\n')
 	}
-	if 0 < n && n <= 8 {
-		sound.Play(sound.Wobble, float32(n+1)*0.25)
+	if 0 < n && n <= 9 {
+		sound.Play(sound.Wobble, float32(n)*0.2+0.25)
 	}
 	switch n {
 	case 1:
@@ -55,6 +55,7 @@ func advanceBootSequence(dt float32) {
 		scoreIsVisible = true
 	case 9:
 		// C++ original does following actions for n==8, but that hides the 8th techobabble.
+		// So wait until n==9.
 		fourierIsVisible = true
 		setZoom(zoomGrow)
 		teletype.Reset()

@@ -24,8 +24,10 @@ func (*context) Render(pm nimble.PixMap) {
 		nimble.PlaySound(Bell, 1, 0.75)
 	case 120:
 		nimble.PlaySound(AntiTwang, 1, 1)
-	case 210:
+	case 150:
 		nimble.PlaySound(Broken, 1, 1)
+	case 180:
+		nimble.Quit()
 	}
 	counter++
 }
@@ -33,5 +35,6 @@ func (*context) Render(pm nimble.PixMap) {
 // Requires visual inspection of stdout
 func TestTwang(t *testing.T) {
 	nimble.AddRenderClient(&context{})
-	nimble.Run()
+	var winSpec nimble.WindowSpec = nil
+	nimble.Run(winSpec)
 }
